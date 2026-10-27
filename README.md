@@ -82,6 +82,7 @@ e2e/               실제 브라우저 플레이/모바일/PWA 테스트
 - [CHARACTER_SYSTEM.md](CHARACTER_SYSTEM.md) — 생성과 성장
 - [CLASS_SYSTEM.md](CLASS_SYSTEM.md) — 8개 기본 직업과 전직 트리
 - [ASSET_SPEC.md](ASSET_SPEC.md) — 그래픽 제작 및 교체 규격
+- [ASSET_REPLACEMENT_GUIDE.md](ASSET_REPLACEMENT_GUIDE.md) — 현재 도트 원본·시트 좌표·나중의 정식 에셋 교체 지시서
 - [ROADMAP.md](ROADMAP.md) — 단계별 구현 범위
 
 ## 미구현
@@ -127,3 +128,7 @@ PWA manifest는 `orientation: portrait`, `display: standalone`을 사용합니�
 향후 전쟁은 [WAR_SYSTEM.md](WAR_SYSTEM.md)에 **주인공1 + 부지휘관1 + 그 외 최대18 = 총20명**으로 설계만 정리했습니다. 두 지휘관 모두 전투에 참여합니다. 현재 전쟁 런타임/20인 편성은 구현하지 않았고, 주인공의 고유 능력 각성·특별 전직 실행도 후속 단계입니다.
 
 일반 전투의 생성·보상과 공통 시뮬레이션을 분리했습니다. 전술 명령, 유닛 AI, 이동 공간 처리, 공격·피격·스킬은 각각 독립 함수로 관리하며 기존 호출 API와 저장 버전은 유지합니다. 변경 전 리플레이와 같은 전투 결과를 회귀 검증합니다.
+
+## 도트 에셋
+
+[아트 도감](https://sejin0523.github.io/outcast-mercenaries/art/)에서 남녀 8직업 의상, 4방향 걷기 시트, 고블린 3병종, 레이어 분리 참조와 숲 전장을 볼 수 있습니다. 외부 이미지 모델 없이 픽셀 드로잉으로 직접 제작했습니다. npm run art:export로 같은 PNG를 재생성하고 레이어 합성/결정성 64개 조합을 검사합니다. 실제 게임은 저장된 외형에 맞춰 같은 원본을 합성합니다. 정식 공격·피격·사망 스프라이트 애니메이션은 후속 범위입니다.

@@ -1,25 +1,34 @@
 import type { CombatUnit, Direction, Action } from "../domain/combat/types";
-// Replace this resolver with atlas keys/frames keyed by direction + action.
+import type { GoblinKind } from "./goblin";
 export interface CombatAppearance {
   textureKey: string;
   direction: Direction;
   action: Action;
+  frame: number;
+  goblinKind: GoblinKind;
   flipX: boolean;
   tint: number;
 }
-export function combatAppearance(unit: CombatUnit): CombatAppearance {
+/** All directions have actual artwork. Four frames are reserved for walking. */
+export function combatAppearance(unit: CombatUnit, time = 0): CombatAppearance {
+  const frame = unit.action === "move" ? Math.floor(time * 8) % 4 : 0;
+  const goblinKind: GoblinKind = unit.boss
+    ? "chief"
+    : unit.role === "ranged"
+      ? "archer"
+      : "fighter";
   return {
-    textureKey: unit.mercenary ? `rt-${unit.id}` : "rt-goblin",
+    textureKey: `rt-${unit.mercenary ? unit.id : `goblin-${goblinKind}`}-${unit.direction}-${frame}`,
     direction: unit.direction,
     action: unit.action,
-    flipX: unit.direction === "left",
+    frame,
+    goblinKind,
+    flipX: false,
     tint:
       unit.action === "hurt"
         ? 0xffb1a0
         : unit.action === "cast"
           ? 0xffed9f
-          : unit.direction === "up"
-            ? 0xc3d1c4
-            : 0xffffff,
+          : 0xffffff,
   };
 }

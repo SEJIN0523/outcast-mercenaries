@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:live": "playwright test --config playwright.live.config.ts",
-    "icons": "node scripts/create-icons.mjs"
+    "icons": "node scripts/create-icons.mjs",
+    "art:export": "node scripts/export-art.mjs"
   },
   "dependencies": {
     "idb": "^8.0.3",

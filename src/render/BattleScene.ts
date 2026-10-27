@@ -2,6 +2,9 @@ import Phaser from "phaser";
 import { store } from "../state/store";
 import { FIELD } from "../data/combat";
 import { drawMercenary } from "./sprite";
+import { drawGoblin } from "./goblin";
+import { drawBattlefield } from "./battlefield";
+import type { CombatUnit } from "../domain/combat/types";
 import { combatAppearance } from "./combatAppearance";
 import type { CombatBattle } from "../domain/combat/types";
 type Actor = {
@@ -12,7 +15,7 @@ type Actor = {
 };
 export class BattleScene extends Phaser.Scene {
   private unsubscribe?: () => void;
-  private backdrop!: Phaser.GameObjects.Graphics;
+  private backdrop!: Phaser.GameObjects.Image;
   private actors = new Map<string, Actor>();
   private missiles = new Map<number, Phaser.GameObjects.Graphics>();
   private numbers = new Map<number, Phaser.GameObjects.Text>();
@@ -23,7 +26,15 @@ export class BattleScene extends Phaser.Scene {
     super("portrait-battle");
   }
   create() {
-    this.backdrop = this.add.graphics();
+    if (!this.textures.exists("forest-clearing-v2")) {
+      const t = this.textures.createCanvas("forest-clearing-v2", 360, 420)!;
+      drawBattlefield(t.context);
+      t.refresh();
+    }
+    this.backdrop = this.add
+      .image(0, 0, "forest-clearing-v2")
+      .setOrigin(0)
+      .setDepth(-1);
     this.background();
     this.sync();
     this.unsubscribe = store.subscribe(() => this.sync());
@@ -46,60 +57,14 @@ export class BattleScene extends Phaser.Scene {
   }
   private background() {
     if (!this.backdrop) return;
-    const g = this.backdrop,
-      w = this.scale.width,
-      h = this.scale.height;
-    g.clear();
-    g.fillStyle(0x243e33);
-    g.fillRect(0, 0, w, h);
-    g.fillStyle(0x42563a);
-    g.fillEllipse(w * 0.5, h * 0.5, w * 0.88, h * 0.95);
-    g.fillStyle(0x4d5f3d);
-    g.fillEllipse(w * 0.5, h * 0.55, w * 0.68, h * 0.67);
-    for (let i = 0; i < 50; i++) {
-      g.fillStyle(i % 3 === 0 ? 0x8d9860 : 0x2d4a32, 0.45);
-      g.fillRect(
-        (((i * 97) % 359) / 360) * w,
-        (((i * 73) % 419) / 420) * h,
-        2 + (i % 4),
-        2,
-      );
-    }
-    for (let i = 0; i < 10; i++) {
-      const x = i % 2 === 0 ? -10 : w + 10,
-        y = (i / 10) * h;
-      g.fillStyle(i % 3 === 0 ? 0x132b23 : 0x1b3428);
-      g.fillTriangle(x, y - 25, x - 38, y + 48, x + 38, y + 48);
-    }
-    g.lineStyle(1, 0xd3b97a, 0.22);
-    g.lineBetween(w * 0.2, h * 0.96, w * 0.8, h * 0.96);
-    g.fillStyle(0xb8bf8244);
-    g.fillRect(w * 0.46, h * 0.96, w * 0.08, 3);
+    this.backdrop.setDisplaySize(this.scale.width, this.scale.height);
   }
-  private texture(id: string) {
-    if (this.textures.exists(id)) return;
-    const m = this.battle!.units.find((u) => `rt-${u.id}` === id)?.mercenary;
-    const t = this.textures.createCanvas(id, 64, 80)!;
-    if (m) drawMercenary(t.context, m);
-    else {
-      const c = t.context;
-      const r = (x: number, y: number, w: number, h: number, color: string) => {
-        c.fillStyle = color;
-        c.fillRect(x, y, w, h);
-      };
-      r(17, 52, 10, 21, "#544f37");
-      r(35, 52, 10, 21, "#544f37");
-      r(13, 30, 37, 28, "#6a7947");
-      r(16, 9, 31, 28, "#9baa5c");
-      r(6, 17, 14, 8, "#92a352");
-      r(44, 17, 14, 8, "#92a352");
-      r(22, 20, 5, 5, "#e7cf7c");
-      r(37, 20, 5, 5, "#e7cf7c");
-      r(28, 31, 10, 3, "#42452d");
-      r(48, 32, 4, 36, "#946b45");
-      r(44, 29, 13, 8, "#b5b59b");
-      r(15, 55, 31, 4, "#866c46");
-    }
+  private texture(unit: CombatUnit, a: ReturnType<typeof combatAppearance>) {
+    if (this.textures.exists(a.textureKey)) return;
+    const t = this.textures.createCanvas(a.textureKey, 64, 80)!;
+    if (unit.mercenary)
+      drawMercenary(t.context, unit.mercenary, a.direction, a.frame);
+    else drawGoblin(t.context, a.goblinKind, a.direction, a.frame);
     t.refresh();
   }
   update(time: number, delta: number) {
@@ -114,11 +79,13 @@ export class BattleScene extends Phaser.Scene {
         ? 0
         : Math.min(1.6, (time - this.receivedAt) / 1000) * b.speed);
     for (const u of b.units) {
-      const a = combatAppearance(u);
-      this.texture(a.textureKey);
+      const a = combatAppearance(u, displayTime);
+      this.texture(u, a);
       let node = this.actors.get(u.id);
       if (!node) {
-        const image = this.add.image(0, 0, a.textureKey).setOrigin(0.5, 0.88);
+        const image = this.add
+          .image(0, 0, a.textureKey)
+          .setOrigin(0.5, 74 / 80);
         const hp = this.add.graphics();
         const label = this.add
           .text(0, 7, u.name, {
@@ -146,6 +113,7 @@ export class BattleScene extends Phaser.Scene {
           ? Math.sin(displayTime * 14) * 1.5
           : 0;
       node.image
+        .setTexture(a.textureKey)
         .setScale(viewScale * 0.6 * (u.boss ? 1.16 : 1))
         .setFlipX(a.flipX)
         .setTint(a.tint);

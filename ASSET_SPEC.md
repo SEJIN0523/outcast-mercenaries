@@ -10,22 +10,28 @@
 - 발 기준 피벗 (32, 74), 정면 발 위치/손잡이 지점 통일
 - nearest-neighbor 확대, 정수 배율 2~4 권장, smoothing 금지
 - 투명 배경, 외곽선 1px, 캐릭터당 24색 이내 권장
-- MVP 임시 그림도 64×80 canvas에 코드로 합성; 실제 제작 품질의 에셋 아님
+- 현재 Mosslight v2 그림은 64×80 Canvas에서 직접 제작·합성하며 같은 함수로 PNG 참조 시트를 생성한다. 외부 이미지 생성 모델은 사용하지 않는다
 
 ## 레이어와 순서
 
-shadow → body(피부/체형) → armor → hair → weapon → shield. 각 레이어는 같은 피벗과 프레임 인덱스를 사용한다. 장비 `spriteKey`가 리소스 식별자다. PNG를 로드하는 texture resolver로 교체하면 도메인/세이브를 바꾸지 않는다. MVP에서 분리형 이미지를 저장하지 않고 런타임 합성한다.
+shadow → hairBack → body(피부/체형) → armor → face → hair → weapon → shield. 각 레이어는 같은 피벗과 프레임 인덱스를 사용한다. 장비 `spriteKey`가 리소스 식별자다. PNG를 로드하는 texture resolver로 교체하면 도메인/세이브를 바꾸지 않는다. 런타임은 저장된 외형으로 합성하며 onlyLayer 인수로 개별 레이어를 출력할 수 있다. public/art/layers-reference.png에 분리 참조 시트를 제공한다.
 
-## 향후 애니메이션
+## 현재 프레임과 향후 애니메이션
 
-방향 down/left/right/up, idle 4프레임, walk 6, attack 6, hurt 2, down 4. 초기 납품은 down/idle 1프레임부터 가능. 이름 예: `body/human/female/standard.png`, `hair/03/brown.png`, `armor/scout.png`, `weapon/oak-bow.png`. JSON atlas에 frame/pivot/layer 정보를 포함한다. 헤어 색상·피부색은 팔레트 치환을 고려한다.
+현재는 down/left/right/up 각 걷기 4프레임이며 대기는 0번을 사용한다. 옆모습은 3/4 표현, 좌우는 대칭이고 뒷머리를 별도로 그린다. 공격·피격·사망은 기존 이동/색조/회전 연출이다. 향후 정식 납품 목표는 idle 4프레임, walk 6, attack 6, hurt 2, down 4다. 초기 납품은 down/idle 1프레임부터 가능. 이름 예: `body/human/female/standard.png`, `hair/03/brown.png`, `armor/scout.png`, `weapon/oak-bow.png`. JSON atlas에 frame/pivot/layer 정보를 포함한다. 헤어 색상·피부색은 팔레트 치환을 고려한다.
 
 ## 배경과 UI
 
 타일 16×16px, 환경 오브젝트 16 배수, 배경 기준 960×360. 모바일에서는 같은 장면을 축소/레터박스하며 조작 UI는 DOM으로 유지한다. UI 아이콘은 16/24px. 터치 버튼은 최소 44px. PWA 아이콘 192/512px PNG, 별도 maskable 512px 아이콘은 안전 영역 안에 심볼을 둔다.
 
-본부 배경은 위 가로 원본을 세로 앱 안의 장면 카드로 사용한다. 전투는 별도 세로형 장면으로, 약 360×400 기준에서 부모의 실제 가용 높이에 맞춰 Phaser RESIZE로 그린다. 캐릭터 공통 64×80 프레임은 그대로 사용하고 HP/스킬/웨이브/일시정지는 캔버스 밖 DOM 영역에 고정한다.
+본부 배경은 위 가로 원본을 세로 앱 안의 장면 카드로 사용한다. 전투는 별도 세로형 장면으로, 360×420 논리 전장 기준에서 부모의 실제 가용 높이에 맞춰 Phaser RESIZE로 그린다. 캐릭터 공통 64×80 프레임은 그대로 사용하고 HP/전술/웨이브/일시정지는 캔버스 밖 DOM 영역에 고정한다.
 
 ## 교체 점검
 
 프레임 규격, 투명도, 남녀 공통 발 위치, 무기 그립, 방패 겹침, 모든 피부/헤어 조합, 모바일 가독성 및 라이선스를 확인한다. 오디오·초상화·공격 이펙트는 후속 납품.
+
+## 현재 도트 에셋 패키지
+
+남녀 8직업 16종×4방향×4프레임=256프레임, 고블린 전사/궁수/대장 3종×16=48프레임, 8레이어 참조, 360×420 숲 공터, 확대 비교 시트를 public/art에 제공한다. 헤어 4형과 피부/머리색·3종족·3체형은 런타임 데이터로 재현한다. 본부 배경은 기존 그림을 유지하고 새 캐릭터를 함께 사용한다.
+
+재생성은 npm run art:export, 열람은 /art/다. 실제 교체 위치·프레임 좌표·팔레트·fallback·PWA 검증과 다음 작업자에게 전달할 지시는 [ASSET_REPLACEMENT_GUIDE.md](ASSET_REPLACEMENT_GUIDE.md)에 있다. PNG 참조본만 덮어써서는 현재 게임의 드로잉 원본이 바뀌지 않는다.

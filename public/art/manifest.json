@@ -1,0 +1,319 @@
+{
+  "version": 2,
+  "frame": {
+    "width": 64,
+    "height": 80,
+    "pivot": {
+      "x": 32,
+      "y": 74
+    }
+  },
+  "columns": [
+    {
+      "direction": "down",
+      "frame": 0
+    },
+    {
+      "direction": "down",
+      "frame": 1
+    },
+    {
+      "direction": "down",
+      "frame": 2
+    },
+    {
+      "direction": "down",
+      "frame": 3
+    },
+    {
+      "direction": "left",
+      "frame": 0
+    },
+    {
+      "direction": "left",
+      "frame": 1
+    },
+    {
+      "direction": "left",
+      "frame": 2
+    },
+    {
+      "direction": "left",
+      "frame": 3
+    },
+    {
+      "direction": "right",
+      "frame": 0
+    },
+    {
+      "direction": "right",
+      "frame": 1
+    },
+    {
+      "direction": "right",
+      "frame": 2
+    },
+    {
+      "direction": "right",
+      "frame": 3
+    },
+    {
+      "direction": "up",
+      "frame": 0
+    },
+    {
+      "direction": "up",
+      "frame": 1
+    },
+    {
+      "direction": "up",
+      "frame": 2
+    },
+    {
+      "direction": "up",
+      "frame": 3
+    }
+  ],
+  "rows": [
+    {
+      "classId": "warrior",
+      "gender": "male",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#584135",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "sword",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "archer",
+      "gender": "male",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#d5b36c",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "bow",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "mage",
+      "gender": "male",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#a34e3a",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "staff",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "priest",
+      "gender": "male",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#c2c9d0",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "staff",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "rogue",
+      "gender": "male",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#353241",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "dagger",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "lancer",
+      "gender": "male",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#73909a",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "spear",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "guardian",
+      "gender": "male",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#584135",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "sword",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "bard",
+      "gender": "male",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#d5b36c",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "lute",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "warrior",
+      "gender": "female",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#a34e3a",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "sword",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "archer",
+      "gender": "female",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#c2c9d0",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "bow",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "mage",
+      "gender": "female",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#353241",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "staff",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "priest",
+      "gender": "female",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#73909a",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "staff",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "rogue",
+      "gender": "female",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#584135",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "dagger",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "lancer",
+      "gender": "female",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#d5b36c",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "spear",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "guardian",
+      "gender": "female",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#a34e3a",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "sword",
+        "armor": "cloth"
+      }
+    },
+    {
+      "classId": "bard",
+      "gender": "female",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#c2c9d0",
+        "skinColor": "#f3cda5",
+        "bodyType": 0
+      },
+      "equipment": {
+        "weapon": "lute",
+        "armor": "cloth"
+      }
+    }
+  ],
+  "enemyRows": [
+    "fighter",
+    "archer",
+    "chief"
+  ],
+  "layerRows": [
+    "shadow",
+    "hairBack",
+    "body",
+    "armor",
+    "face",
+    "hair",
+    "weapon",
+    "shield"
+  ],
+  "notes": "Reference samples. Runtime regenerates all saved appearance combinations. Movement frames only; other action animation uses existing effects."
+}
