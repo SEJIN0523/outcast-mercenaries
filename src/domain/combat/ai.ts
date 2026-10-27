@@ -36,6 +36,9 @@ export function selectTarget(
   return [...opponents].sort((a, c) => score(a) - score(c))[0];
   function score(t: CombatUnit) {
     let result = distance(u, t) - (u.targetId === t.id ? 12 : 0);
+    if (u.side === "party" && b.priority === "threat") result -= t.threat * 15;
+    if (u.side === "party" && b.priority === "weakest")
+      result += (t.hp / t.maxHp) * 140;
     if (u.side === "party" && b.tactic === "protect" && !rear(u))
       result -= threatToRear(t, b) * 2;
     if (u.side === "enemy" && u.role === "ranged") result -= rear(t) ? 25 : 0;

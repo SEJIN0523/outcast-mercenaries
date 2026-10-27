@@ -2,7 +2,16 @@ import "fake-indexeddb/auto";
 import { describe, expect, it } from "vitest";
 import { decodeSave, encodeSave, readSave, writeSave } from "./save";
 import { newGuild } from "../domain/guild";
+import { createMercenary } from "../domain/characters";
 describe("세이브 버전과 검증", () => {
+  it("버전1의 5인 편성을 저장하고 6명 편성은 거부한다", () => {
+    const g = newGuild();
+    expect(decodeSave(encodeSave(g)).party).toHaveLength(5);
+    const extra = createMercenary("sixth");
+    g.roster.push(extra);
+    g.party.push(extra.id);
+    expect(() => decodeSave(encodeSave(g))).toThrow("형식");
+  });
   it("모든 생성 정보를 JSON round-trip 한다", () => {
     const guild = newGuild();
     expect(decodeSave(encodeSave(guild))).toEqual(guild);

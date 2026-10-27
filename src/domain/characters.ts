@@ -1,6 +1,7 @@
 import { CLASSES, EQUIPMENT, TRAITS } from "../data/catalog";
 import { random } from "./random";
 import type { ClassId, Mercenary, Stats } from "./types";
+export const isHero = (m: Mercenary) => m.story === "hero" || m.id === "hero";
 export const HAIR = [
   "#584135",
   "#d5b36c",

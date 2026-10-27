@@ -4,6 +4,7 @@ export {
   stepBattle,
   advanceBattle,
   changeTactic,
+  changePriority,
   requestEscape,
   applyReward,
 } from "./combat/simulation";

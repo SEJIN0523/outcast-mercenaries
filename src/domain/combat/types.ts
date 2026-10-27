@@ -1,4 +1,5 @@
 import type { Unit } from "../types";
+export type AttackPriority = "threat" | "nearest" | "weakest";
 export type TacticId =
   "charge" | "balanced" | "protect" | "hold" | "focus" | "retreat";
 export type Direction = "up" | "down" | "left" | "right";
@@ -51,6 +52,7 @@ export interface CombatBattle {
   elapsed: number;
   status: "active" | "victory" | "defeat" | "escaped";
   tactic: TacticId;
+  priority: AttackPriority;
   focusId: string | null;
   events: CombatEvent[];
   projectiles: Projectile[];

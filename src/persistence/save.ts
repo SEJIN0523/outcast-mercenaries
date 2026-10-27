@@ -2,6 +2,7 @@ import { openDB } from "idb";
 import { z } from "zod";
 import { CLASSES, EQUIPMENT, TRAITS } from "../data/catalog";
 import type { Guild } from "../domain/types";
+import { NORMAL_PARTY_LIMIT } from "../data/party";
 const integer = (min: number, max: number) =>
   z.number().int().min(min).max(max);
 const known = (catalog: object) =>
@@ -41,7 +42,7 @@ const guildSchema = z.object({
   gold: integer(0, 1_000_000_000),
   roster: z.array(mercSchema).min(1).max(24),
   candidates: z.array(mercSchema).max(6),
-  party: z.array(z.string()).min(1).max(4),
+  party: z.array(z.string()).min(1).max(NORMAL_PARTY_LIMIT),
   recruitBatch: integer(0, 1_000_000),
   victories: integer(0, 1_000_000),
 });

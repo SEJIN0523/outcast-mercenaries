@@ -67,7 +67,7 @@ describe("모집과 파티", () => {
       ),
     ).toThrow("24");
   });
-  it("파티 최소 1명·최대 4명·소속 제한을 지킨다", () => {
+  it("보존된 legacy 파티의 최소 1명·최대 4명·소속 제한을 지킨다", () => {
     let g = newGuild();
     g = toggleParty(g, "ria");
     expect(() => toggleParty(g, "hero")).toThrow("최소");

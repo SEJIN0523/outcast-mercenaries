@@ -4,6 +4,7 @@ import {
   startBattle,
   advanceBattle,
   changeTactic,
+  changePriority,
   requestEscape,
 } from "../domain/battle";
 import { decodeSave, readSave, writeSave } from "../persistence/save";
@@ -150,7 +151,8 @@ export const store = {
       emit({
         battle: startBattle(state.guild),
         paused: false,
-        notice: "자율전투 시작. 단장은 전술과 도주를 지휘합니다.",
+        notice:
+          "주인공과 동료의 자율전투 시작. 전술·우선순위·도주를 지휘하세요.",
       });
     }),
   tick: () => {
@@ -159,6 +161,13 @@ export const store = {
   },
   tactic: (tactic: TacticId) => {
     if (state.battle) emit({ battle: changeTactic(state.battle, tactic) });
+  },
+  priority: () => {
+    if (state.battle) {
+      const ids = ["threat", "nearest", "weakest"] as const;
+      const next = ids[(ids.indexOf(state.battle.priority) + 1) % ids.length];
+      emit({ battle: changePriority(state.battle, next) });
+    }
   },
   escape: () => {
     if (state.battle) emit({ battle: requestEscape(state.battle) });

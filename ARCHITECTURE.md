@@ -31,3 +31,7 @@ DB `outcast-guild`, store `saves`, key `main`. 세이브는 `{version:1, savedAt
 - Phaser 설치: https://docs.phaser.io/phaser/getting-started/installation
 - Vite PWA: https://vite-pwa-org.netlify.app/guide/
 - Service Worker 등록: https://vite-pwa-org.netlify.app/guide/register-service-worker
+
+## 일반 전투 인원과 주인공
+
+NORMAL_PARTY_LIMIT은5이며 주인공을 포함한다. combatParty는 기존 저장 배열을 덮어쓰지 않고 주인공 포함/중복제거/상한5의 유효 명단을 계산한다. 원거리/전위별 인원에 따라 진형 좌표를 산출한다. 주인공은 같은 CombatUnit과 AI를 사용하지만 초기 skillIds는 빈 배열이다. 보상은 주인공을 포함한 participants 모두에게 지급한다. version1 party는1~5명을 허용하는 호환 확장이며 전쟁의20인 명단은 현재 런타임/세이브에 구현하지 않는다. 공격 우선순위는 비영속 전투 상태로 관리한다.

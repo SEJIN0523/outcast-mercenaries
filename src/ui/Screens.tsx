@@ -1,5 +1,6 @@
 import { CLASSES, RACES } from "../data/catalog";
-import { recruitCost } from "../domain/characters";
+import { recruitCost, isHero } from "../domain/characters";
+import { NORMAL_PARTY_LIMIT } from "../data/party";
 import { combatParty } from "../domain/guild";
 import type { Guild } from "../domain/types";
 import { store } from "../state/store";
@@ -42,7 +43,7 @@ export function HomeScreen({
           <span>출전 파티</span>
           <b>
             {combatParty(guild).length}
-            <small> / 4</small>
+            <small> / {NORMAL_PARTY_LIMIT}</small>
           </b>
         </div>
         <div>
@@ -72,7 +73,7 @@ export function HomeScreen({
         <button onClick={() => navigate("party")}>
           <Icon name="party" />
           <span>
-            파티 준비하기<small>최대 4명의 동료와 함께</small>
+            파티 준비하기<small>주인공과 최대 4명의 동료</small>
           </span>
           <b>↗</b>
         </button>
@@ -136,8 +137,7 @@ export function MercenariesScreen({
               </div>
               <span>
                 <b>
-                  {m.name}{" "}
-                  {m.story && <i>{m.story === "hero" ? "단장" : "동료"}</i>}
+                  {m.name} {m.story && <i>{isHero(m) ? "단장" : "동료"}</i>}
                 </b>
                 <small>
                   {RACES[m.race]} · {m.gender === "female" ? "여" : "남"} ·{" "}
@@ -162,9 +162,11 @@ export function MercenariesScreen({
               </button>
             ) : (
               <span
-                className={`roster-tag ${guild.party.includes(m.id) ? "enlisted" : ""}`}
+                className={`roster-tag ${combatParty(guild).some((person) => person.id === m.id) ? "enlisted" : ""}`}
               >
-                {guild.party.includes(m.id) ? "편성 중" : "대기"}
+                {combatParty(guild).some((person) => person.id === m.id)
+                  ? "편성 중"
+                  : "대기"}
               </span>
             )}
           </article>
@@ -191,12 +193,15 @@ export function PartyScreen({
       <div className="screen-heading">
         <span className="eyebrow">YOUR COMPANIONS</span>
         <h1>
-          출전 파티 <small>{combatParty(guild).length} / 4</small>
+          출전 파티{" "}
+          <small>
+            {combatParty(guild).length} / {NORMAL_PARTY_LIMIT}
+          </small>
         </h1>
         <p>동료를 선택해 함께할 파티를 준비하세요.</p>
       </div>
       <div className="party-grid">
-        {Array.from({ length: 4 }, (_, i) =>
+        {Array.from({ length: NORMAL_PARTY_LIMIT }, (_, i) =>
           party[i] ? (
             <button
               key={party[i].id}
@@ -221,36 +226,38 @@ export function PartyScreen({
       </div>
       <div className="section-heading">
         <h2>편성할 동료</h2>
-        <span>최소 1명 · 최대 4명</span>
+        <span>주인공 포함 최대 5명</span>
       </div>
       <div className="party-roster">
-        {guild.roster
-          .filter((m) => m.story !== "hero")
-          .map((m) => (
-            <article className="party-row" key={m.id}>
-              <button
-                onClick={() => inspect(m.id)}
-                className="party-person"
-                aria-label={`${m.name} 상세 정보`}
-              >
-                <Avatar m={m} />
-                <span>
-                  <b>{m.name}</b>
-                  <small>
-                    {CLASSES[m.classId].name} · Lv.{m.level}
-                  </small>
-                </span>
-              </button>
-              <button
-                className={`party-toggle ${guild.party.includes(m.id) ? "enlisted" : ""}`}
-                disabled={disabled}
-                onClick={() => store.toggleParty(m.id)}
-                aria-label={`${m.name} ${guild.party.includes(m.id) ? "편성 해제" : "편성"}`}
-              >
-                {guild.party.includes(m.id) ? "✓ 편성 중" : "＋ 편성"}
-              </button>
-            </article>
-          ))}
+        {guild.roster.map((m) => (
+          <article className="party-row" key={m.id}>
+            <button
+              onClick={() => inspect(m.id)}
+              className="party-person"
+              aria-label={`${m.name} 상세 정보`}
+            >
+              <Avatar m={m} />
+              <span>
+                <b>{m.name}</b>
+                <small>
+                  {CLASSES[m.classId].name} · Lv.{m.level}
+                </small>
+              </span>
+            </button>
+            <button
+              className={`party-toggle ${combatParty(guild).some((person) => person.id === m.id) ? "enlisted" : ""}`}
+              disabled={disabled || isHero(m)}
+              onClick={() => store.toggleParty(m.id)}
+              aria-label={`${m.name} ${combatParty(guild).some((person) => person.id === m.id) ? "편성 해제" : "편성"}`}
+            >
+              {isHero(m)
+                ? "고정 출전"
+                : combatParty(guild).some((person) => person.id === m.id)
+                  ? "✓ 편성 중"
+                  : "＋ 편성"}
+            </button>
+          </article>
+        ))}
       </div>
       <button
         className="primary full-width"
@@ -307,12 +314,15 @@ export function QuestsScreen({
           </div>
           <div className="quest-preparation">
             <span>
-              현재 파티 <b>{combatParty(guild).length} / 4명</b>
+              현재 파티{" "}
+              <b>
+                {combatParty(guild).length} / {NORMAL_PARTY_LIMIT}명
+              </b>
             </span>
             <small>권장 Lv.1 · 2인 이상</small>
           </div>
           <p className="hint">
-            이동·공격·스킬은 자동입니다. 단장은 전술만 지휘합니다.
+            주인공을 포함해 전원이 AI로 이동·공격합니다.
             <br />
             패배해도 골드 손실이나 영구 사망은 없습니다.
           </p>

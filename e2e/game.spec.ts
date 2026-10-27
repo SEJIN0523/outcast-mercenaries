@@ -43,7 +43,9 @@ for (const size of [
 ])
   test.describe(`${size.width}×${size.height} 실시간 자율전투`, () => {
     test.use({ viewport: size, isMobile: true, hasTouch: true });
-    test("4대5 이동·전술·자동 스킬·2배속·보상·저장", async ({ page }) => {
+    test("주인공 포함 5대5 이동·전술·자동 스킬·2배속·보상·저장", async ({
+      page,
+    }) => {
       const errors: string[] = [];
       page.on("pageerror", (e) => errors.push(e.message));
       await page.goto("./");
@@ -57,17 +59,17 @@ for (const size of [
       await expect(page.locator(".merc-row")).toHaveCount(6);
       await page.locator(".merc-inspect").first().click();
       await expect(
-        page.getByRole("button", { name: "단장은 직접 전투하지 않습니다" }),
+        page.getByRole("button", { name: "주인공은 일반 전투에 고정 출전" }),
       ).toBeDisabled();
       await page.getByRole("button", { name: "장비", exact: true }).click();
       await expect(page.locator(".equipment-list article")).toHaveCount(2);
       await page.getByRole("button", { name: "닫기", exact: true }).click();
       await navigate(page, "편성");
-      await expect(page.locator(".party-slot.filled")).toHaveCount(4);
-      await expect(page.locator(".party-roster")).not.toContainText("단장");
-      await page.locator(".party-toggle").first().click();
-      await page.locator(".party-toggle").first().click();
-      await expect(page.locator(".party-slot.filled")).toHaveCount(4);
+      await expect(page.locator(".party-slot.filled")).toHaveCount(5);
+      await expect(page.locator(".party-roster")).toContainText("단장");
+      await page.locator(".party-toggle").nth(1).click();
+      await page.locator(".party-toggle").nth(1).click();
+      await expect(page.locator(".party-slot.filled")).toHaveCount(5);
       const gold = Number(
         (await page.locator(".gold b").innerText()).replace(/,/g, ""),
       );
@@ -75,13 +77,27 @@ for (const size of [
       await page.getByRole("button", { name: /출전하기/ }).click();
       await page.getByRole("button", { name: "일시정지", exact: true }).click();
       await expect(page.locator(".rt-enemy-health .rt-health")).toHaveCount(5);
-      await expect(page.locator(".rt-ally-health .rt-health")).toHaveCount(4);
-      await expect(page.locator(".rt-ally-health")).not.toContainText("단장");
+      await expect(page.locator(".rt-ally-health .rt-health")).toHaveCount(5);
+      await expect(page.locator(".rt-ally-health")).toContainText("단장");
       await expect(page.locator(".skill-button")).toHaveCount(0);
       const clock = await page.getByTestId("battle-time").innerText(),
         positions = await page
           .getByTestId("battlefield")
           .getAttribute("data-positions");
+      const heroPosition = await page
+        .getByTestId("battlefield")
+        .getAttribute("data-hero-position");
+      expect(heroPosition).toBeTruthy();
+      await page.getByRole("button", { name: "공격 우선순위 고위협" }).click();
+      await expect(
+        page.getByRole("button", { name: "공격 우선순위 가까운 적" }),
+      ).toBeVisible();
+      await page
+        .getByRole("button", { name: "공격 우선순위 가까운 적" })
+        .click();
+      await expect(
+        page.getByRole("button", { name: "공격 우선순위 낮은 HP" }),
+      ).toBeVisible();
       await page.waitForTimeout(1200);
       await expect(page.getByTestId("battle-time")).toHaveText(clock);
       await expect(page.getByTestId("battlefield")).toHaveAttribute(
@@ -135,6 +151,10 @@ for (const size of [
         "data-positions",
         positions!,
       );
+      await expect(page.getByTestId("battlefield")).not.toHaveAttribute(
+        "data-hero-position",
+        heroPosition!,
+      );
       await page.waitForTimeout(1800);
       await page.screenshot({
         path: `test-results/battle-moving-${size.width}.png`,
@@ -149,7 +169,12 @@ for (const size of [
       await page.reload();
       await expect(page.getByTestId("victories")).toHaveText("1");
       await navigate(page, "편성");
-      await expect(page.locator(".party-slot.filled")).toHaveCount(4);
+      await expect(page.locator(".party-slot.filled")).toHaveCount(5);
+      await page
+        .getByRole("button", { name: "단장 상세 정보", exact: true })
+        .click();
+      await expect(page.locator(".class-label")).toContainText("Lv.2");
+      await expect(page.locator(".xp-line")).toContainText("15 / 80");
       expect(errors).toEqual([]);
     });
   });
@@ -169,9 +194,7 @@ test("도주 별도 명령과 무보상 결과", async ({ page }) => {
   await expect(page.locator(".gold b")).toHaveText("240");
   await expect(page.getByTestId("victories")).toHaveText("0");
 });
-test("기존 버전1 저장의 단장·능력·장비를 유지하고 전장 편성만 제외", async ({
-  page,
-}) => {
+test("기존 버전1 저장의 주인공·능력·장비와 2인 편성 유지", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator(".storage-status")).toContainText("저장 완료");
   await page.evaluate(async (raw) => {
@@ -192,11 +215,11 @@ test("기존 버전1 저장의 단장·능력·장비를 유지하고 전장 편
   await expect(page.locator(".gold b")).toHaveText("432");
   await expect(page.getByTestId("victories")).toHaveText("7");
   await navigate(page, "편성");
-  await expect(page.locator(".party-slot.filled")).toHaveCount(1);
-  await expect(page.locator(".party-roster")).not.toContainText("단장");
+  await expect(page.locator(".party-slot.filled")).toHaveCount(2);
+  await expect(page.locator(".party-roster")).toContainText("단장");
   await navigate(page, "용병");
   await page.getByRole("button", { name: "단장 상세 정보" }).click();
-  await expect(page.locator(".class-label")).toContainText("용병단장");
+  await expect(page.locator(".class-label")).toContainText("주인공");
   await expect(page.locator(".xp-line")).toContainText("15 / 80");
   await page.getByRole("button", { name: "장비", exact: true }).click();
   await expect(page.locator(".equipment-list")).toContainText("낡은 철검");
@@ -256,7 +279,7 @@ test("PC 팝업·키보드·수동 저장", async ({ page }) => {
   await page.getByRole("button", { name: "지금 저장" }).click();
   await expect(page.locator(".settings-status")).toContainText("저장 완료");
 });
-test("360×640 안전 영역에서도 전술 6개·도주·속도·4대5 HP 모두 표시", async ({
+test("360×640 안전 영역에서도 전술 6개·도주·속도·주인공 포함 5대5 HP 모두 표시", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 360, height: 640 });
@@ -269,7 +292,7 @@ test("360×640 안전 영역에서도 전술 6개·도주·속도·4대5 HP 모�
   await navigate(page, "의뢰");
   await page.getByRole("button", { name: /출전하기/ }).click();
   await page.getByRole("button", { name: "일시정지", exact: true }).click();
-  await expect(page.locator(".rt-ally-health .rt-health")).toHaveCount(4);
+  await expect(page.locator(".rt-ally-health .rt-health")).toHaveCount(5);
   await expect(page.locator(".tactic-grid button")).toHaveCount(6);
   await inViewport(page, controls);
   expect(

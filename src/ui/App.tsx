@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { CLASSES, EQUIPMENT, RACES, TRAITS } from "../data/catalog";
-import { recruitCost, statsOf, xpNeeded } from "../domain/characters";
+import { recruitCost, statsOf, xpNeeded, isHero } from "../domain/characters";
+import { combatParty } from "../domain/guild";
 import type { Mercenary } from "../domain/types";
 import { encodeSave } from "../persistence/save";
 import { store } from "../state/store";
@@ -218,7 +219,9 @@ export function App() {
           <CharacterDetails
             m={selectedMercenary}
             owned={guild.roster.some((m) => m.id === selected)}
-            inParty={guild.party.includes(selectedMercenary.id)}
+            inParty={combatParty(guild).some(
+              (m) => m.id === selectedMercenary.id,
+            )}
             disabled={disabled}
           />
         </Modal>
@@ -339,8 +342,8 @@ function CharacterDetails({
         </div>
         <div>
           <span className="class-label" style={{ color: c.color }}>
-            {m.story === "hero"
-              ? "용병단장 · 비전투"
+            {isHero(m)
+              ? `주인공 · ${c.name} · Lv.${m.level}`
               : `${c.name} · Lv.${m.level}`}
           </span>
           <h3>
@@ -348,15 +351,15 @@ function CharacterDetails({
           </h3>
           <p>
             {RACES[m.race]} ·{" "}
-            {m.story === "hero"
-              ? "후방에서 전술을 지휘합니다"
+            {isHero(m)
+              ? "동료들과 함께 싸우는 지휘관"
               : m.story === "ria"
                 ? "숲의 길잡이"
                 : c.role}
           </p>
           <span className="roster-tag enlisted">
-            {m.story === "hero"
-              ? "전술 지휘관"
+            {isHero(m)
+              ? "주인공 고정 출전 · AI 전투"
               : owned
                 ? inParty
                   ? "출전 파티"
@@ -414,6 +417,15 @@ function CharacterDetails({
             <b>✦ {TRAITS[m.traitId].name}</b>
             <span>{TRAITS[m.traitId].description}</span>
           </div>
+          {isHero(m) && (
+            <p className="hero-possibility">
+              전투 스킬 없음 · 평범한 능력으로 출발합니다.
+              <br />
+              숨겨진 고유 능력 「가능성의 눈」은 아직 잠들어 있습니다.
+              <br />
+              레벨·장비로 성장하며 스토리 기반 특별 전직을 예정합니다.
+            </p>
+          )}
           <details className="class-tree">
             <summary>가능성의 눈 · 전직 경로</summary>
             {c.branches.map((branch, i) => (
@@ -423,6 +435,12 @@ function CharacterDetails({
               </p>
             ))}
             <p className="hint">Lv.5 / Lv.15 · 전직 실행은 추후 구현</p>
+            {isHero(m) && (
+              <p className="hint">
+                주인공 특별 전직은 「가능성의 눈」 각성과 스토리 조건을 연계하는
+                별도 성장 경로로 설계합니다. 현재는 해금되지 않았습니다.
+              </p>
+            )}
           </details>
         </>
       ) : (
@@ -447,14 +465,14 @@ function CharacterDetails({
       <button
         className={`${owned ? "secondary" : "primary"} full-width detail-action`}
         disabled={
-          m.story === "hero" ||
+          isHero(m) ||
           disabled ||
           (!owned && store.getSnapshot().guild.gold < recruitCost(m))
         }
         onClick={() => (owned ? store.toggleParty(m.id) : store.recruit(m.id))}
       >
-        {m.story === "hero"
-          ? "단장은 직접 전투하지 않습니다"
+        {isHero(m)
+          ? "주인공은 일반 전투에 고정 출전"
           : owned
             ? inParty
               ? "파티에서 제외"

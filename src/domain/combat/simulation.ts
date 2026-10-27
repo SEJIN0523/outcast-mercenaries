@@ -4,7 +4,8 @@ import {
   FIELD,
   TACTICS,
 } from "../../data/combat";
-import { gainXp, statsOf } from "../characters";
+import { gainXp, statsOf, isHero } from "../characters";
+import { NORMAL_PARTY_LIMIT } from "../../data/party";
 import { combatParty } from "../guild";
 import type { Guild, Mercenary } from "../types";
 import { decideIntent, distance, living, rear } from "./ai";
@@ -14,13 +15,12 @@ import type {
   CombatUnit,
   Point,
   TacticId,
+  AttackPriority,
 } from "./types";
 
-function fighter(m: Mercenary, index: number): CombatUnit {
+function fighter(m: Mercenary, index: number, home: Point): CombatUnit {
   const s = statsOf(m),
     p = COMBAT_PROFILES[m.classId];
-  const back = p.role === "ranged" || p.role === "healer";
-  const home = { x: [100, 260, 145, 215][index], y: back ? 345 : 285 };
   return {
     id: m.id,
     name: m.name,
@@ -40,7 +40,9 @@ function fighter(m: Mercenary, index: number): CombatUnit {
     attackInterval: p.interval,
     attackCooldown: 0.2 + index * 0.08,
     skillCooldowns: {},
-    skillIds: [...p.skills],
+    // The initial protagonist has no combat skills. A future story unlock can
+    // extend this resolver without changing movement, targeting or basic attacks.
+    skillIds: isHero(m) ? [] : [...p.skills],
     targetId: null,
     direction: "up",
     action: "idle",
@@ -54,9 +56,23 @@ function fighter(m: Mercenary, index: number): CombatUnit {
   };
 }
 export function startBattle(guild: Guild): CombatBattle {
-  const party = combatParty(guild).slice(0, 4);
-  if (!party.length) throw Error("단장 외에 출전할 용병을 편성해 주세요.");
-  const units = party.map(fighter);
+  const party = combatParty(guild).slice(0, NORMAL_PARTY_LIMIT);
+  if (!party.length) throw Error("출전할 인물을 편성해 주세요.");
+  const back = (m: Mercenary) =>
+    ["ranged", "healer"].includes(COMBAT_PROFILES[m.classId].role);
+  const rearCount = party.filter(back).length,
+    frontCount = party.length - rearCount;
+  let frontIndex = 0,
+    rearIndex = 0;
+  const units = party.map((m, index) => {
+    const ranged = back(m),
+      slot = ranged ? ++rearIndex : ++frontIndex,
+      count = ranged ? rearCount : frontCount;
+    return fighter(m, index, {
+      x: (FIELD.width * slot) / (count + 1),
+      y: ranged ? 345 : 285,
+    });
+  });
   for (let i = 0; i < 5; i++) {
     const boss = i === 4,
       ranged = i === 2;
@@ -101,11 +117,14 @@ export function startBattle(guild: Guild): CombatBattle {
     elapsed: 0,
     status: "active",
     tactic: "balanced",
+    priority: "threat",
     focusId: null,
     events: [],
     projectiles: [],
     nextEventId: 1,
-    logs: ["단장은 후방에서 지휘합니다. 고블린 5마리와 조우했습니다."],
+    logs: [
+      "주인공과 동료들이 전장에 진입했습니다. 고블린 5마리와 조우했습니다.",
+    ],
     participants: party.map((m) => m.id),
     rewarded: false,
     escaping: false,
@@ -248,11 +267,45 @@ export function separateUnits(units: CombatUnit[]) {
       }
 }
 function sharedFocus(b: CombatBattle) {
+  const allies = b.units.filter((u) => u.side === "party" && living(u));
+  const center = {
+    x: allies.reduce((sum, u) => sum + u.x, 0) / (allies.length || 1),
+    y: allies.reduce((sum, u) => sum + u.y, 0) / (allies.length || 1),
+  };
+  const score = (u: CombatUnit) =>
+    b.priority === "nearest"
+      ? distance(u, center)
+      : b.priority === "weakest"
+        ? (u.hp / u.maxHp) * 100
+        : -u.threat;
   return (
     b.units
       .filter((u) => u.side === "enemy" && living(u))
-      .sort((a, c) => c.threat - a.threat || a.hp - c.hp)[0]?.id ?? null
+      .sort((a, c) => score(a) - score(c) || a.hp - c.hp)[0]?.id ?? null
   );
+}
+export function changePriority(
+  b: CombatBattle,
+  priority: AttackPriority,
+): CombatBattle {
+  if (
+    b.status !== "active" ||
+    b.escaping ||
+    !["threat", "nearest", "weakest"].includes(priority)
+  )
+    return b;
+  const next = {
+    ...b,
+    priority,
+    units: b.units.map((u) => ({
+      ...u,
+      targetId: u.side === "party" ? null : u.targetId,
+    })),
+  };
+  return {
+    ...next,
+    focusId: next.tactic === "focus" ? sharedFocus(next) : null,
+  };
 }
 export function changeTactic(b: CombatBattle, tactic: TacticId): CombatBattle {
   if (b.status !== "active" || b.escaping || !Object.hasOwn(TACTICS, tactic))
@@ -421,9 +474,7 @@ export function applyReward(
       gold: guild.gold + 120,
       victories: guild.victories + 1,
       roster: guild.roster.map((m) =>
-        battle.participants.includes(m.id) && m.story !== "hero"
-          ? gainXp(m, 55)
-          : m,
+        battle.participants.includes(m.id) ? gainXp(m, 55) : m,
       ),
     },
     battle: result,

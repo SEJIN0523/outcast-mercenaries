@@ -1,5 +1,5 @@
 import type { CombatBattle, CombatUnit } from "../domain/combat/types";
-import { TACTICS } from "../data/combat";
+import { TACTICS, ATTACK_PRIORITIES } from "../data/combat";
 import type { TacticId } from "../domain/combat/types";
 import { store } from "../state/store";
 import { Icon } from "./components";
@@ -55,7 +55,7 @@ export function BattleScreen({
           <Icon name="sword" />
         </span>
         <div>
-          <small>속삭임의 숲 · 단장은 후방 지휘 중</small>
+          <small>속삭임의 숲 · 주인공도 AI로 전투</small>
           <h1>고블린 토벌</h1>
         </div>
         <button
@@ -103,6 +103,10 @@ export function BattleScreen({
       <div
         className="battlefield rt-field"
         data-testid="battlefield"
+        data-hero-position={battle.units
+          .filter((u) => u.mercenary?.story === "hero" || u.id === "hero")
+          .map((u) => `${Math.round(u.x)},${Math.round(u.y)}`)
+          .join(";")}
         data-positions={battle.units
           .filter((u) => u.side === "party")
           .map((u) => `${Math.round(u.x)},${Math.round(u.y)}`)
@@ -119,7 +123,7 @@ export function BattleScreen({
       <section className="rt-allies" aria-label="아군 체력">
         <div className="rt-side-label">
           <span>YOUR MERCENARIES</span>
-          <span>{battle.participants.length}명 · 단장 비전투</span>
+          <span>{battle.participants.length} / 5명 · 주인공 포함</span>
         </div>
         <div className="rt-ally-health">
           {battle.units
@@ -159,6 +163,14 @@ export function BattleScreen({
               : TACTICS[battle.tactic].description}
           </p>
           <div className="battle-utility">
+            <button
+              className="priority-button"
+              aria-label={`공격 우선순위 ${ATTACK_PRIORITIES[battle.priority]}`}
+              onClick={store.priority}
+              disabled={battle.escaping}
+            >
+              우선: {ATTACK_PRIORITIES[battle.priority]}
+            </button>
             <button
               className="escape-button"
               onClick={store.escape}

@@ -1,5 +1,10 @@
 import type { ClassId } from "../domain/types";
 import type { TacticId } from "../domain/combat/types";
+export const ATTACK_PRIORITIES = {
+  threat: "고위협",
+  nearest: "가까운 적",
+  weakest: "낮은 HP",
+} as const;
 export const FIELD = {
   width: 360,
   height: 420,
@@ -178,7 +183,7 @@ export const TACTICS: Record<
   },
   focus: {
     name: "집중 공격",
-    description: "AI가 지정한 고위협 적 하나를 공동 목표로 삼습니다.",
+    description: "공격 우선순위에 맞춰 고른 적 하나를 함께 공격합니다.",
     pursuit: 260,
   },
   retreat: {

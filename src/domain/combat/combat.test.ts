@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { newGuild, combatParty, toggleParty } from "../guild";
-import { createMercenary } from "../characters";
+import { createMercenary, statsOf } from "../characters";
 import { CLASSES } from "../../data/catalog";
 import { COMBAT_PROFILES, FIELD } from "../../data/combat";
 import {
@@ -8,6 +8,7 @@ import {
   stepBattle,
   advanceBattle,
   changeTactic,
+  changePriority,
   requestEscape,
   applyReward,
   separateUnits,
@@ -53,39 +54,86 @@ function finish(input: CombatBattle) {
   return b;
 }
 describe("실시간 전투와 단장", () => {
-  it("신규 전투는 전투원 4명 대 고블린 5명이며 단장은 전장에 없다", () => {
+  it("일반 전투는 주인공 포함 5명 대 고블린 5명이다", () => {
     const g = newGuild(),
       b = startBattle(g);
-    expect(b.units.filter((u) => u.side === "party")).toHaveLength(4);
+    expect(b.units.filter((u) => u.side === "party")).toHaveLength(5);
     expect(b.units.filter((u) => u.side === "enemy")).toHaveLength(5);
-    expect(b.units.some((u) => u.id === "hero")).toBe(false);
+    expect(b.units.some((u) => u.id === "hero")).toBe(true);
+    expect(
+      b.units.every((u) => Number.isFinite(u.x) && Number.isFinite(u.y)),
+    ).toBe(true);
     expect(g.roster.some((m) => m.story === "hero")).toBe(true);
   });
-  it("기존 편성에서 단장을 전투 계산에만 제외하고 저장 원본을 바꾸지 않는다", () => {
+  it("기존 주인공 편성을 중복시키지 않고 저장 원본을 바꾸지 않는다", () => {
     const g = newGuild();
     g.party = ["hero", "ria"];
-    expect(combatParty(g).map((m) => m.id)).toEqual(["ria"]);
-    expect(startBattle(g).participants).toEqual(["ria"]);
+    expect(combatParty(g).map((m) => m.id)).toEqual(["hero", "ria"]);
+    expect(startBattle(g).participants).toEqual(["hero", "ria"]);
     expect(g.party).toEqual(["hero", "ria"]);
-    expect(() => toggleParty(g, "hero")).toThrow("단장");
-    expect(toggleParty(g, "kael").party).toEqual(["ria", "kael"]);
+    expect(() => toggleParty(g, "hero")).toThrow("고정 출전");
+    expect(toggleParty(g, "kael").party).toEqual(["hero", "ria", "kael"]);
   });
-  it("단장만 편성한 기존 기록은 출전을 막는다", () => {
+  it("주인공 단독 출전도 일반 이동·공격 AI를 사용하며 전투 스킬은 없다", () => {
     const g = newGuild();
     g.party = ["hero"];
-    expect(() => startBattle(g)).toThrow("단장 외");
+    const started = startBattle(g);
+    expect(started.participants).toEqual(["hero"]);
+    const hero = { ...started.units[0], attackCooldown: 0 };
+    expect(hero.skillIds).toEqual([]);
+    const enemy = {
+      ...unit("warrior", "enemy", "enemy"),
+      x: hero.x,
+      y: hero.y - 23,
+      skillIds: [],
+      attackCooldown: 10,
+      moveSpeed: 0,
+    };
+    const attacked = stepBattle(battle(hero, enemy));
+    expect(
+      attacked.events.some((e) => e.sourceId === "hero" && e.type === "attack"),
+    ).toBe(true);
+    expect(attacked.units[1].hp).toBeLessThan(enemy.hp);
+    const moved = stepBattle(
+      changeTactic(battle(hero, { ...enemy, y: 90 }), "charge"),
+    );
+    expect(moved.units[0].y).toBeLessThan(hero.y);
   });
-  it("기본 4인 파티가 승리하며 120G/전투원55XP를 한 번 지급한다", () => {
+  it("기본 5인 파티가 승리하며 주인공에게도 55XP와 레벨업을 지급한다", () => {
     const g = newGuild(),
       b = finish(startBattle(g));
     expect(b.status).toBe("victory");
     expect(b.elapsed).toBeLessThan(120);
     const result = applyReward(g, b);
     expect(result.guild.gold).toBe(360);
-    expect(result.guild.roster.find((m) => m.id === "hero")!.xp).toBe(0);
+    const before = g.roster.find((m) => m.id === "hero")!,
+      after = result.guild.roster.find((m) => m.id === "hero")!;
+    expect(after).toMatchObject({ level: 2, xp: 15 });
+    expect(after.equipment).toEqual(before.equipment);
+    expect(statsOf(after).attack).toBeGreaterThan(statsOf(before).attack);
     expect(result.guild.roster.find((m) => m.id === "ria")!.level).toBe(2);
     expect(applyReward(result.guild, result.battle).guild).toEqual(
       result.guild,
+    );
+  });
+  it("주인공을 제외하던 구 4인 편성에도 주인공을 포함해 정확히 5명만 출전한다", () => {
+    const g = newGuild();
+    g.party = ["kael", "ria", "mira", "noel"];
+    const raw = [...g.party];
+    expect(startBattle(g).participants).toEqual(["hero", ...raw]);
+    expect(g.party).toEqual(raw);
+    g.roster.push(createMercenary("extra"));
+    expect(() => toggleParty(g, "merc-extra")).toThrow("최대 5명");
+  });
+  it("초기 주인공은 동일 직업의 평범한 능력치이며 잠든 능력으로 스킬을 얻지 않는다", () => {
+    const g = newGuild(),
+      hero = g.roster.find((m) => m.id === "hero")!;
+    expect(statsOf(hero)).toEqual(
+      statsOf({ ...hero, id: "ordinary", story: undefined }),
+    );
+    hero.level = 10;
+    expect(startBattle(g).units.find((u) => u.id === "hero")!.skillIds).toEqual(
+      [],
     );
   });
   it("동일 입력은 결정적이며 2배속 두 스텝은 같은 시간의 1배속과 일치한다", () => {
@@ -250,6 +298,28 @@ describe("스킬 데이터 조건과 자동 발동", () => {
   });
 });
 describe("전술의 실제 행동 차이", () => {
+  it("공격 우선순위 지휘는 개별 조작 없이 공동 목표와 기본 목표 선정을 바꾼다", () => {
+    const a = unit("warrior", "a"),
+      near = { ...unit("warrior", "near", "enemy"), x: 120, threat: 1 },
+      weak = { ...unit("warrior", "weak", "enemy"), x: 180, hp: 1 },
+      boss = {
+        ...unit("warrior", "boss", "enemy"),
+        x: 200,
+        boss: true,
+        threat: 4,
+      };
+    const focused = changeTactic(battle(a, near, weak, boss), "focus");
+    expect(focused.focusId).toBe("boss");
+    expect(changePriority(focused, "weakest").focusId).toBe("weak");
+    expect(changePriority(focused, "nearest").focusId).toBe("near");
+    expect(
+      selectTarget(a, changePriority(battle(a, near, weak, boss), "weakest"))
+        ?.id,
+    ).toBe("weak");
+    expect(
+      changePriority(focused, "nearest").units.map((u) => u.attack),
+    ).toEqual(focused.units.map((u) => u.attack));
+  });
   it("돌격은 긴 추격, 진형 유지는 홈에서 대기한다", () => {
     const a = unit("warrior", "a"),
       e = { ...unit("warrior", "e", "enemy"), y: 50 };
