@@ -134,3 +134,7 @@ PWA manifest는 `orientation: portrait`, `display: standalone`을 사용합니�
 [아트 도감](https://sejin0523.github.io/outcast-mercenaries/art/)에서 남녀 8직업 의상, 4방향 걷기 시트, 고블린 3병종, 레이어 분리 참조와 숲 전장을 볼 수 있습니다. 외부 이미지 모델 없이 픽셀 드로잉으로 직접 제작했습니다. npm run art:export로 같은 PNG를 재생성하고 레이어 합성/결정성 112개 조합을 검사합니다. 실제 게임은 저장된 외형에 맞춰 같은 원본을 합성합니다. 정식 공격·피격·사망 스프라이트 애니메이션은 후속 범위입니다.
 
 신규 랜덤 용병은 피부·머리 외에도 눈색, 직업별 옷색, 복장과 무기 형태가 달라집니다. 한 번 생성된 모습은 저장 후 유지되며 기존 인물은 재추첨하지 않습니다. 아트 도감에서 현재 게임 도트 조합과 이미지 생성 베리에이션 시안을 구분해 볼 수 있습니다.
+
+## 생성 게임 에셋 팩1
+
+[실제 적용 PNG 도감](https://sejin0523.github.io/outcast-mercenaries/art/generated/)에서 남녀5직업과 고블린3종의4방향52포즈를 볼 수 있습니다. 초기 파티와 고블린에 새 PNG를 연결했으며 랜덤/커스텀 인물의 저장 외형은 기존 합성을 유지합니다. 원본은 docs/art/sources, 작은 런타임 시트는 public/art/generated에 있습니다. 재패킹은 npm run art:bake입니다. 자세한 적용 범위와 한계는 [GENERATED_ASSETS.md](GENERATED_ASSETS.md)를 참고하세요.

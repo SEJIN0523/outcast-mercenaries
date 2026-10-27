@@ -1,3 +1,4 @@
+import { drawGeneratedMercenary } from "./generatedArt";
 import { EQUIPMENT } from "../data/catalog";
 import type { Mercenary } from "../domain/types";
 import type { Direction } from "../domain/combat/types";
@@ -38,6 +39,7 @@ export function drawMercenary(
   frame = 0,
   onlyLayer?: SpriteLayer,
 ) {
+  if (!onlyLayer && drawGeneratedMercenary(ctx, m, direction, frame)) return;
   ctx.clearRect(0, 0, 64, 80);
   ctx.imageSmoothingEnabled = false;
   ctx.save();

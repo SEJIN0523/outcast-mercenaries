@@ -114,7 +114,7 @@ export class BattleScene extends Phaser.Scene {
           : 0;
       node.image
         .setTexture(a.textureKey)
-        .setScale(viewScale * 0.6 * (u.boss ? 1.16 : 1))
+        .setScale(viewScale * 0.78 * (u.boss ? 1.16 : 1))
         .setFlipX(a.flipX)
         .setTint(a.tint);
       node.image.y = walk;
@@ -145,12 +145,12 @@ export class BattleScene extends Phaser.Scene {
         node.image.setAngle(0);
         node.hp.clear();
         node.hp.fillStyle(0x13241b);
-        node.hp.fillRect(-15, -42 * viewScale, 30, 4);
+        node.hp.fillRect(-15, -58 * viewScale, 30, 4);
         node.hp.fillStyle(u.side === "party" ? 0xb6cb86 : 0xcd9676);
-        node.hp.fillRect(-14, -42 * viewScale + 1, (28 * u.hp) / u.maxHp, 2);
+        node.hp.fillRect(-14, -58 * viewScale + 1, (28 * u.hp) / u.maxHp, 2);
         if (u.shield > 0) {
           node.hp.fillStyle(0x9fd7e4);
-          node.hp.fillRect(-14, -42 * viewScale - 3, 28, 2);
+          node.hp.fillRect(-14, -58 * viewScale - 3, 28, 2);
         }
       }
     }

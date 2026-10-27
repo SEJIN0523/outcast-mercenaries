@@ -1,3 +1,4 @@
+import { drawGeneratedGoblin } from "./generatedArt";
 import type { Direction } from "../domain/combat/types";
 import { pixelPainter } from "./pixels";
 export type GoblinKind = "fighter" | "archer" | "chief";
@@ -7,6 +8,7 @@ export function drawGoblin(
   direction: Direction = "down",
   frame = 0,
 ) {
+  if (drawGeneratedGoblin(ctx, kind, direction, frame)) return;
   ctx.clearRect(0, 0, 64, 80);
   ctx.imageSmoothingEnabled = false;
   ctx.save();

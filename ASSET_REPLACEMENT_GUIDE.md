@@ -2,7 +2,7 @@
 
 ## 현재 에셋과 원본
 
-Mosslight v2는 외부 이미지 생성 모델·외부 게임 이미지 없이 이 저장소에서 직접 작성한 픽셀 드로잉이다. 런타임 원본은 TypeScript이며, PNG는 같은 함수를 실행해 내보낸 참조본이다. **public/art의 PNG만 덮어쓰면 현재 게임 캐릭터가 바뀌는 구조가 아니다.** 현재 게임은 저장된 외형 조합을 Canvas로 합성한다.
+Mosslight v2는 외부 이미지 생성 모델·외부 게임 이미지 없이 이 저장소에서 직접 작성한 픽셀 드로잉이다. 런타임 원본은 TypeScript이며, PNG는 같은 함수를 실행해 내보낸 참조본이다. public/art 바로 아래의 예전 PNG는 참조본이다. **public/art/generated의 신규 아틀라스는 실제 게임에서 읽는다.** 고정 초기 동료/고블린은 생성 PNG, 랜덤 및 커스텀 인물은 저장 외형의 Canvas 합성을 사용한다. 적용 범위와 재패킹은 [GENERATED_ASSETS.md](GENERATED_ASSETS.md)를 따른다.
 
 | 파일 | 용도 / 교체 위치 |
 | --- | --- |
@@ -78,3 +78,7 @@ Mosslight v2는 외부 이미지 생성 모델·외부 게임 이미지 없이 �
 ## 다음 작업자에게 그대로 전달할 지시
 
 > ASSET_REPLACEMENT_GUIDE.md와 ASSET_SPEC.md를 먼저 읽으세요. 현재 Mosslight v2의 64×80 프레임, 발 피벗(32,74), 4방향×4걷기프레임, 8레이어 순서를 유지하며 전달한 에셋을 연결하세요. PNG 참조본만 바꾸지 말고 실제 sprite.ts / goblin.ts / BattleScene의 렌더 경계를 수정하세요. 랜덤 피부·헤어·성별·종족·장비 조합과 기존 저장, 5인 자동전투를 보존하세요. 불완전한 납품에는 기존 드로잉 fallback을 유지하고, 전투 로직을 변경하지 마세요. 도감 PNG 재생성, 모바일 검증, 테스트 결과와 실제 교체된 범위를 보고하세요. 정식 공격/피격/사망 원화가 없다면 구현됐다고 보고하지 마세요.
+
+## 생성 PNG 팩 교체
+
+실제 소비 파일은 public/art/generated의 6개 아틀라스다. 프레임64×80, 열 down/left/right/up, 행 male/female 또는 fighter/archer/chief를 유지하면 로더를 바꾸지 않고 교체할 수 있다. 큰 생성 원본은 docs/art/sources에 보관하고 npm run art:bake로 패킹한다. 코드형 참조본의 npm run art:export와 구분한다. 원본이 바뀌면 bake 스크립트의 좌우 매핑과 행 범위를 재검수한다. 고정 서명이 다른 캐릭터는 fallback을 유지한다. 분리 레이어가 준비되기 전 랜덤 인물에게 고정 완성 PNG를 무작위로 붙이지 않는다.
