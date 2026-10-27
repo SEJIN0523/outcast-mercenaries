@@ -1,3 +1,4 @@
+import { separateUnits } from "./spatial";
 import { describe, expect, it } from "vitest";
 import { newGuild, combatParty, toggleParty } from "../guild";
 import { createMercenary, statsOf } from "../characters";
@@ -11,8 +12,7 @@ import {
   changePriority,
   requestEscape,
   applyReward,
-  separateUnits,
-} from "./simulation";
+} from "../battle";
 import { chooseAutoSkill, decideIntent, selectTarget, distance } from "./ai";
 import type { CombatBattle, CombatUnit } from "./types";
 import type { ClassId } from "../types";

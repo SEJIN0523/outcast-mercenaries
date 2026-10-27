@@ -1,15 +1,23 @@
-import { AUTO_SKILLS, FIELD, TACTICS } from "../../data/combat";
-import type { CombatBattle, CombatUnit, Intent, Point } from "./types";
-export const distance = (a: Point, b: Point) =>
-  Math.hypot(a.x - b.x, a.y - b.y);
-export const living = (u: CombatUnit) => u.hp > 0 && !u.escaped;
-export const rear = (u: CombatUnit) =>
-  u.role === "ranged" || u.role === "healer";
-export function formationPoint(u: CombatUnit, b: CombatBattle): Point {
+import { FIELD } from "../../data/combat";
+import { AUTO_SKILLS } from "../../data/skills";
+import { TACTICS } from "../../data/tactics";
+import { getBattleOrders } from "./commands";
+import { distance, living, rear } from "./spatial";
+import type {
+  CombatBattle,
+  CombatUnit,
+  Intent,
+  Point,
+  TacticalOrders,
+} from "./types";
+export { distance, living, rear } from "./spatial";
+
+export function formationPoint(u: CombatUnit, orders: TacticalOrders): Point {
   if (u.side === "enemy") return u.home;
-  if (b.tactic === "retreat")
+  if (orders.tactic === "retreat")
     return { x: u.home.x, y: Math.min(380, u.home.y + 55) };
-  if (b.tactic === "protect") return { x: u.home.x, y: rear(u) ? 365 : 300 };
+  if (orders.tactic === "protect")
+    return { x: u.home.x, y: rear(u) ? 365 : 300 };
   return u.home;
 }
 export function threatToRear(enemy: CombatUnit, b: CombatBattle): number {
@@ -27,24 +35,26 @@ export function threatToRear(enemy: CombatUnit, b: CombatBattle): number {
 export function selectTarget(
   u: CombatUnit,
   b: CombatBattle,
+  orders: TacticalOrders = getBattleOrders(b),
 ): CombatUnit | undefined {
   const opponents = b.units.filter((t) => t.side !== u.side && living(t));
-  if (u.side === "party" && b.tactic === "focus") {
-    const focus = opponents.find((t) => t.id === b.focusId);
+  if (u.side === "party" && orders.tactic === "focus") {
+    const focus = opponents.find((t) => t.id === orders.focusId);
     if (focus) return focus;
   }
   return [...opponents].sort((a, c) => score(a) - score(c))[0];
   function score(t: CombatUnit) {
     let result = distance(u, t) - (u.targetId === t.id ? 12 : 0);
-    if (u.side === "party" && b.priority === "threat") result -= t.threat * 15;
-    if (u.side === "party" && b.priority === "weakest")
+    if (u.side === "party" && orders.priority === "threat")
+      result -= t.threat * 15;
+    if (u.side === "party" && orders.priority === "weakest")
       result += (t.hp / t.maxHp) * 140;
-    if (u.side === "party" && b.tactic === "protect" && !rear(u))
+    if (u.side === "party" && orders.tactic === "protect" && !rear(u))
       result -= threatToRear(t, b) * 2;
     if (u.side === "enemy" && u.role === "ranged") result -= rear(t) ? 25 : 0;
     if (
       u.side === "enemy" &&
-      b.tactic === "protect" &&
+      orders.tactic === "protect" &&
       !rear(t) &&
       distance(u, t) < 50
     )
@@ -102,9 +112,13 @@ export function chooseAutoSkill(
     }
   }
 }
-export function decideIntent(u: CombatUnit, b: CombatBattle): Intent {
+export function decideIntent(
+  u: CombatUnit,
+  b: CombatBattle,
+  orders: TacticalOrders = getBattleOrders(b),
+): Intent {
   if (!living(u)) return { kind: "idle", targetId: null };
-  if (b.escaping && u.side === "party")
+  if (orders.escaping && u.side === "party")
     return {
       kind: "move",
       point: { x: u.home.x, y: FIELD.exitY + 5 },
@@ -112,15 +126,15 @@ export function decideIntent(u: CombatUnit, b: CombatBattle): Intent {
     };
   if (
     u.side === "party" &&
-    b.tactic === "retreat" &&
-    distance(u, formationPoint(u, b)) > 12
+    orders.tactic === "retreat" &&
+    distance(u, formationPoint(u, orders)) > 12
   )
-    return { kind: "move", point: formationPoint(u, b), targetId: null };
+    return { kind: "move", point: formationPoint(u, orders), targetId: null };
   const skill = chooseAutoSkill(u, b);
   if (skill) return skill;
-  const target = selectTarget(u, b);
+  const target = selectTarget(u, b, orders);
   if (!target) return { kind: "idle", targetId: null };
-  const home = formationPoint(u, b),
+  const home = formationPoint(u, orders),
     gap = distance(u, target);
   const nearest = b.units
     .filter((e) => e.side !== u.side && living(e))
@@ -144,23 +158,23 @@ export function decideIntent(u: CombatUnit, b: CombatBattle): Intent {
     };
   }
   if (u.side === "party") {
-    if (b.tactic === "retreat" && distance(u, home) > 12)
+    if (orders.tactic === "retreat" && distance(u, home) > 12)
       return { kind: "move", point: home, targetId: target.id };
-    if (b.tactic === "hold" && distance(u, home) > 28)
+    if (orders.tactic === "hold" && distance(u, home) > 28)
       return { kind: "move", point: home, targetId: target.id };
     const guarding =
-      b.tactic === "protect" && !rear(u) && threatToRear(target, b) > 0;
+      orders.tactic === "protect" && !rear(u) && threatToRear(target, b) > 0;
     const leash = guarding
       ? 350
-      : TACTICS[b.tactic].pursuit + (rear(u) ? u.range : 0);
+      : TACTICS[orders.tactic].pursuit + (rear(u) ? u.range : 0);
     if (
       distance(target, home) > leash ||
-      (b.tactic === "retreat" && gap > u.range)
+      (orders.tactic === "retreat" && gap > u.range)
     )
       return distance(u, home) > 7
         ? { kind: "move", point: home, targetId: target.id }
         : { kind: "idle", targetId: target.id };
-    if (b.tactic === "protect" && rear(u) && distance(u, home) > 24)
+    if (orders.tactic === "protect" && rear(u) && distance(u, home) > 24)
       return { kind: "move", point: home, targetId: target.id };
   }
   if (gap > u.range) {

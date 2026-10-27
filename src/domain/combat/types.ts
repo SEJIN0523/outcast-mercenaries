@@ -1,4 +1,5 @@
 import type { Unit } from "../types";
+import type { BarrierState } from "../statusEffects";
 export type AttackPriority = "threat" | "nearest" | "weakest";
 export type TacticId =
   "charge" | "balanced" | "protect" | "hold" | "focus" | "retreat";
@@ -9,7 +10,7 @@ export interface Point {
   x: number;
   y: number;
 }
-export interface CombatUnit extends Unit, Point {
+export interface CombatUnit extends Unit, Point, BarrierState {
   home: Point;
   moveSpeed: number;
   range: number;
@@ -25,8 +26,6 @@ export interface CombatUnit extends Unit, Point {
   role: "melee" | "ranged" | "healer" | "tank";
   threat: number;
   boss: boolean;
-  shield: number;
-  shieldUntil: number;
   escaped: boolean;
 }
 export interface CombatEvent extends Point {
@@ -46,21 +45,23 @@ export interface Projectile extends Point {
   damage: number;
   kind: "arrow" | "magic";
 }
-export interface CombatBattle {
+export interface TacticalOrders {
+  tactic: TacticId;
+  priority: AttackPriority;
+  focusId: string | null;
+  escaping: boolean;
+}
+export interface CombatBattle extends TacticalOrders {
   units: CombatUnit[];
   tick: number;
   elapsed: number;
   status: "active" | "victory" | "defeat" | "escaped";
-  tactic: TacticId;
-  priority: AttackPriority;
-  focusId: string | null;
   events: CombatEvent[];
   projectiles: Projectile[];
   nextEventId: number;
   logs: string[];
   participants: string[];
   rewarded: boolean;
-  escaping: boolean;
   speed: 1 | 2;
 }
 export type Intent =

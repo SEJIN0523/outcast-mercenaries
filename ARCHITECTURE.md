@@ -20,7 +20,7 @@ DB `outcast-guild`, store `saves`, key `main`. 세이브는 `{version:1, savedAt
 
 ## PWA / 배포
 
-프로덕션 빌드에서 manifest 및 service worker 생성. 앱 쉘과 번들/아이콘을 precache한다. 첫 접속은 네트워크가 필요하다. 업데이트는 사용자 선택 후 적용한다. 설치 이벤트가 없는 환경에서는 설치 안내를 표시한다. HTTPS 또는 localhost가 필요하다. GitHub Pages 경로는 configure-pages의 PAGES_BASE_PATH 또는 GITHUB_REPOSITORY에서 계산하고 Vite와 manifest id/start_url/scope, Service Worker fallback에 공통 적용한다. PWA는 portrait 방향을 요청한다. 일반 화면은 세로 앱의 하단 내비게이션을 사용하고, 전투는 별도 BattleScene과 DOM HP/스킬 조작으로 전체 동적 뷰포트를 사용한다. 세부 규격은 PORTRAIT_UI.md를 참고한다.
+프로덕션 빌드에서 manifest 및 service worker 생성. 앱 쉘과 번들/아이콘을 precache한다. 첫 접속은 네트워크가 필요하다. 업데이트는 사용자 선택 후 적용한다. 설치 이벤트가 없는 환경에서는 설치 안내를 표시한다. HTTPS 또는 localhost가 필요하다. GitHub Pages 경로는 configure-pages의 PAGES_BASE_PATH 또는 GITHUB_REPOSITORY에서 계산하고 Vite와 manifest id/start_url/scope, Service Worker fallback에 공통 적용한다. PWA는 portrait 방향을 요청한다. 일반 화면은 세로 앱의 하단 내비게이션을 사용하고, 전투는 별도 BattleScene과 DOM HP/전술 조작으로 전체 동적 뷰포트를 사용한다. 세부 규격은 PORTRAIT_UI.md를 참고한다.
 
 ## 검증
 
@@ -35,3 +35,13 @@ DB `outcast-guild`, store `saves`, key `main`. 세이브는 `{version:1, savedAt
 ## 일반 전투 인원과 주인공
 
 NORMAL_PARTY_LIMIT은5이며 주인공을 포함한다. combatParty는 기존 저장 배열을 덮어쓰지 않고 주인공 포함/중복제거/상한5의 유효 명단을 계산한다. 원거리/전위별 인원에 따라 진형 좌표를 산출한다. 주인공은 같은 CombatUnit과 AI를 사용하지만 초기 skillIds는 빈 배열이다. 보상은 주인공을 포함한 participants 모두에게 지급한다. version1 party는1~5명을 허용하는 호환 확장이며 전쟁의20인 명단은 현재 런타임/세이브에 구현하지 않는다. 공격 우선순위는 비영속 전투 상태로 관리한다.
+
+## 현재 전투 모듈 경계
+
+- 공유 데이터: 캐릭터/능력치/장비는 기존 types/catalog/characters, 자동 스킬은 data/skills.ts, 기존 보호막 효과는 data/statusEffects.ts와 domain/statusEffects.ts에서 관리한다. 전투 유형별 성장 복사본은 없다.
+- normalBattle.ts: 일반 전투 출전·배치·고블린 구성·보상. units.ts의 createCombatant로 공유 캐릭터를 일시적 전투 유닛으로 만든다.
+- commands.ts: 전술·공격 우선순위·집중 목표·도주 명령과 TacticalOrders 스냅샷. ai.ts는 명령을 입력받아 각 유닛의 행동을 결정한다.
+- simulation.ts: 50ms 스텝 진행. spatial.ts의 이동 공간 처리와 actions.ts의 공격·피격·자동 스킬·이벤트를 조합한다. 일반 출전 상한이나 성장 보상 계산에 의존하지 않는다.
+- domain/battle.ts는 기존 호출 API를 유지한다. React/Phaser는 같은 상태와 이벤트를 구독하며 시뮬레이션에서 브라우저 API를 참조하지 않는다.
+
+일반 인원 설정은 data/party.ts의 NORMAL_PARTY_LIMIT=5다. 편성·저장 검증·출전·아군 UI 슬롯이 이 값을 사용한다. 이번 구조 분리로 저장 스키마나 전투 규칙을 바꾸지 않는다. 변경 전 리플레이 스냅샷으로 이동·피해·스킬·종료 결과를 비교한다. 미래 확장 지점은 [FUTURE_WAR_SYSTEM.md](FUTURE_WAR_SYSTEM.md)에만 기록한다.

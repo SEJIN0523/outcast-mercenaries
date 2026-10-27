@@ -200,7 +200,12 @@ export function PartyScreen({
         </h1>
         <p>동료를 선택해 함께할 파티를 준비하세요.</p>
       </div>
-      <div className="party-grid">
+      <div
+        className="party-grid"
+        style={{
+          gridTemplateColumns: `repeat(${NORMAL_PARTY_LIMIT},minmax(0,1fr))`,
+        }}
+      >
         {Array.from({ length: NORMAL_PARTY_LIMIT }, (_, i) =>
           party[i] ? (
             <button
@@ -226,7 +231,7 @@ export function PartyScreen({
       </div>
       <div className="section-heading">
         <h2>편성할 동료</h2>
-        <span>주인공 포함 최대 5명</span>
+        <span>주인공 포함 최대 {NORMAL_PARTY_LIMIT}명</span>
       </div>
       <div className="party-roster">
         {guild.roster.map((m) => (

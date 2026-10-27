@@ -39,3 +39,9 @@
 일반 전투 5인, 기존 저장 호환, 주인공 기본 AI/무스킬/경험치/장비 성장, 전술별 목표·이동·추격, 자동 스킬, 투사체, 충돌, 도주, 결정성/배속을 검증한다. 360×800/390×844/412×915 및 축소 높이+safe-area에서 확인한다.
 
 전쟁은 [WAR_SYSTEM.md](WAR_SYSTEM.md)의 설계만 수정한다. 총20명은 주인공1 + 부지휘관1 + 그 외 최대18명이며 전원 전투에 참여한다. 전쟁 런타임, 부지휘관 UI, 다중 부대, 전쟁 저장 데이터는 이번에 구현하지 않는다. 지형 장애물 경로 탐색과 정식 애니메이션도 후속 범위다.
+
+## 구현 파일
+
+일반 출전·배치·보상은 combat/normalBattle.ts, 공유 캐릭터의 전투 유닛 변환은 combat/units.ts에 있다. combat/commands.ts가 전술 입력을 관리하고 combat/ai.ts가 전달받은 명령으로 개별 행동을 선택한다. combat/simulation.ts는 combat/spatial.ts와 combat/actions.ts를 조합해 순수 스텝을 진행한다. 경로는 src/domain 기준이다.
+
+자동 스킬 데이터는 src/data/skills.ts, 전술 데이터는 src/data/tactics.ts에 있다. 기존 보호막의 지속시간과 처리도 별도 statusEffects 파일로 분리했으며 새 상태이상이나 스킬을 추가하지 않았다. 향후 확장 지점은 [FUTURE_WAR_SYSTEM.md](FUTURE_WAR_SYSTEM.md)를 참고한다.

@@ -1,9 +1,10 @@
 import type { CombatBattle, CombatUnit } from "../domain/combat/types";
-import { TACTICS, ATTACK_PRIORITIES } from "../data/combat";
+import { TACTICS, ATTACK_PRIORITIES } from "../data/tactics";
 import type { TacticId } from "../domain/combat/types";
 import { store } from "../state/store";
 import { Icon } from "./components";
 import { GameCanvas } from "./GameCanvas";
+import { NORMAL_PARTY_LIMIT } from "../data/party";
 function Health({ unit }: { unit: CombatUnit }) {
   return (
     <article
@@ -123,9 +124,16 @@ export function BattleScreen({
       <section className="rt-allies" aria-label="아군 체력">
         <div className="rt-side-label">
           <span>YOUR MERCENARIES</span>
-          <span>{battle.participants.length} / 5명 · 주인공 포함</span>
+          <span>
+            {battle.participants.length} / {NORMAL_PARTY_LIMIT}명 · 주인공 포함
+          </span>
         </div>
-        <div className="rt-ally-health">
+        <div
+          className="rt-ally-health"
+          style={{
+            gridTemplateColumns: `repeat(${NORMAL_PARTY_LIMIT},minmax(0,1fr))`,
+          }}
+        >
           {battle.units
             .filter((u) => u.side === "party")
             .map((u) => (

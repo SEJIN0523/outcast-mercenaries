@@ -1804,7 +1804,6 @@ progress::-moz-progress-bar {
 }
 .rt-ally-health {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
 }
 .rt-health {
@@ -1989,7 +1988,6 @@ progress::-moz-progress-bar {
 }
 /* Normal parties count the protagonist among five total slots. */
 .party-grid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 5px;
 }
 .party-slot .avatar {
@@ -1998,9 +1996,6 @@ progress::-moz-progress-bar {
 }
 .party-slot > span {
   font-size: 7px;
-}
-.rt-ally-health {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 .battle-utility {
   grid-template-columns: repeat(3, minmax(0, 1fr));

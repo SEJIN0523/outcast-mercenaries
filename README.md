@@ -78,6 +78,7 @@ e2e/               실제 브라우저 플레이/모바일/PWA 테스트
 
 - [GAME_DESIGN.md](GAME_DESIGN.md) — 세계관과 플레이 루프
 - [ARCHITECTURE.md](ARCHITECTURE.md) — 상태 흐름, 저장과 PWA 구조
+- [FUTURE_WAR_SYSTEM.md](FUTURE_WAR_SYSTEM.md) — 공통 전투 모듈과 향후 전쟁 확장 지점 (전쟁 미구현)
 - [CHARACTER_SYSTEM.md](CHARACTER_SYSTEM.md) — 생성과 성장
 - [CLASS_SYSTEM.md](CLASS_SYSTEM.md) — 8개 기본 직업과 전직 트리
 - [ASSET_SPEC.md](ASSET_SPEC.md) — 그래픽 제작 및 교체 규격
@@ -124,3 +125,5 @@ PWA manifest는 `orientation: portrait`, `display: standalone`을 사용합니�
 실시간 AI·전술·스킬 조건은 [REALTIME_COMBAT.md](REALTIME_COMBAT.md)를 참고하세요. 이전 순차 전투/모집 구현은 `src/domain/legacy/`에 역사적 스냅샷으로 보존했습니다. 기존 저장의 인물·레벨·장비·골드를 재설정하지 않으며, version 1은 1~5인 편성을 읽습니다. 주인공이 빠진 구 4인 배열은 출전 계산에서 주인공을 더하고 첫 편성 변경 시 명단을 정규화합니다.
 
 향후 전쟁은 [WAR_SYSTEM.md](WAR_SYSTEM.md)에 **주인공1 + 부지휘관1 + 그 외 최대18 = 총20명**으로 설계만 정리했습니다. 두 지휘관 모두 전투에 참여합니다. 현재 전쟁 런타임/20인 편성은 구현하지 않았고, 주인공의 고유 능력 각성·특별 전직 실행도 후속 단계입니다.
+
+일반 전투의 생성·보상과 공통 시뮬레이션을 분리했습니다. 전술 명령, 유닛 AI, 이동 공간 처리, 공격·피격·스킬은 각각 독립 함수로 관리하며 기존 호출 API와 저장 버전은 유지합니다. 변경 전 리플레이와 같은 전투 결과를 회귀 검증합니다.
