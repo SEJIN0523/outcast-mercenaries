@@ -1,3 +1,4 @@
+import {rowOf} from "../domain/combat/formation";
 import type { CombatBattle, CombatUnit } from "../domain/combat/types";
 import { TACTICS, ATTACK_PRIORITIES } from "../data/tactics";
 import type { TacticId } from "../domain/combat/types";
@@ -56,7 +57,7 @@ export function BattleScreen({
           <Icon name="sword" />
         </span>
         <div>
-          <small>속삭임의 숲 · 주인공도 AI로 전투</small>
+          <small>3/4 자동전투 · 자유 진형</small>
           <h1>고블린 토벌</h1>
         </div>
         <button
@@ -90,7 +91,7 @@ export function BattleScreen({
           <span>ENEMY</span>
           <span>
             {battle.units.filter((u) => u.side === "enemy" && u.hp > 0).length}{" "}
-            / 5
+            / {battle.units.filter(u=>u.side==="enemy").length}
           </span>
         </div>
         <div className="rt-enemy-health">
@@ -104,6 +105,10 @@ export function BattleScreen({
       <div
         className="battlefield rt-field"
         data-testid="battlefield"
+        data-layout="quarter-formation"
+        data-slot-count="10"
+        data-front-count={battle.units.filter(u=>u.side==='party'&&rowOf(u)==='front').length}
+        data-rear-count={battle.units.filter(u=>u.side==='party'&&rowOf(u)==='rear').length}
         data-hero-position={battle.units
           .filter((u) => u.mercenary?.story === "hero" || u.id === "hero")
           .map((u) => `${Math.round(u.x)},${Math.round(u.y)}`)
@@ -115,7 +120,7 @@ export function BattleScreen({
       >
         <GameCanvas battle />
         <span className="field-location">
-          AUTONOMOUS BATTLE · 이동과 스킬 자동
+          전열 · 후열 대치 · 공격 후 제자리 복귀
         </span>
         {paused && (
           <span className="pause-label">PAUSED · 전술을 선택하세요</span>
@@ -167,7 +172,7 @@ export function BattleScreen({
           </div>
           <p className="tactic-description">
             {battle.escaping
-              ? "모든 생존 용병이 하단 탈출 지점으로 이동합니다."
+              ? "모든 생존 용병이 왼쪽 탈출 지점으로 이동합니다."
               : TACTICS[battle.tactic].description}
           </p>
           <div className="battle-utility">

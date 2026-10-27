@@ -1,3 +1,4 @@
+import {battleImage} from "./battleArt";
 import { drawGeneratedMercenary } from "./generatedArt";
 import { EQUIPMENT } from "../data/catalog";
 import type { Mercenary } from "../domain/types";
@@ -39,6 +40,7 @@ export function drawMercenary(
   frame = 0,
   onlyLayer?: SpriteLayer,
 ) {
+  if(!onlyLayer){const art=battleImage(m);if(art){ctx.clearRect(0,0,64,80);ctx.imageSmoothingEnabled=false;ctx.drawImage(art.image,0,0,64,80);return;}}
   if (!onlyLayer && drawGeneratedMercenary(ctx, m, direction, frame)) return;
   ctx.clearRect(0, 0, 64, 80);
   ctx.imageSmoothingEnabled = false;
@@ -781,6 +783,7 @@ export function drawMercenary(
 }
 const cache = new Map<string, string>();
 export function portrait(m: Mercenary) {
+  const art=battleImage(m);if(art)return art.image.toDataURL();
   const key = appearanceSignature(m);
   if (cache.has(key)) return cache.get(key)!;
   const c = document.createElement("canvas");

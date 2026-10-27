@@ -39,6 +39,7 @@ function unit(
     y: 200,
     home: { x: 100, y: 200 },
     attackCooldown: 0,
+    slotId:undefined,skillCooldowns:{},
   };
 }
 function battle(...units: CombatUnit[]): CombatBattle {
@@ -141,7 +142,7 @@ describe("실시간 전투와 단장", () => {
     expect(advanceBattle(b, 0.1)).toEqual(stepBattle(stepBattle(b)));
     expect(finish(b)).toEqual(finish(b));
     expect(b.tick).toBe(0);
-    expect(b.units[0].y).toBe(285);
+    expect(b.units[0].y).toBe(b.units[0].home.y);
   });
   it("잘못된 시간 간격을 거부하고 종료 후에는 더 진행하지 않는다", () => {
     const b = startBattle(newGuild());
@@ -179,12 +180,11 @@ describe("이동·목표·사거리·위험", () => {
     b = advanceBattle(b, 0.5);
     expect(b.units[1].hp).toBeLessThan(e.hp);
   });
-  it("궁수는 가까운 적으로부터 사거리를 벌린다", () => {
+  it("궁수는 지정 진형에 서서 사거리 안의 적을 공격한다", () => {
     const a = unit("archer", "a"),
       e = { ...unit("warrior", "e", "enemy"), y: 175, threat: 1 };
     const intent = decideIntent(a, battle(a, e));
-    expect(intent.kind).toBe("move");
-    if (intent.kind === "move") expect(intent.point.y).toBeGreaterThan(a.y);
+    expect(intent.kind).toBe("attack");
   });
   it("죽은 목표는 버리고 다른 생존 적을 선택한다", () => {
     const a = unit("warrior", "a"),
@@ -240,7 +240,7 @@ describe("스킬 데이터 조건과 자동 발동", () => {
       chooseAutoSkill(healer, battle(healer, { ...a, x: 350, y: 400 }, e)),
     ).toBeUndefined();
   });
-  it("광역 공격은 적3명 군집에서만 발동한다", () => {
+  it("광역 공격은 데이터의 최소 2명 군집 조건을 따른다", () => {
     const m = unit("mage", "m"),
       enemies = [0, 1, 2].map((i) => ({
         ...unit("warrior", `e${i}`, "enemy"),
@@ -249,14 +249,14 @@ describe("스킬 데이터 조건과 자동 발동", () => {
         attackCooldown: 10,
       }));
     expect(
-      chooseAutoSkill(m, battle(m, ...enemies.slice(0, 2))),
+      chooseAutoSkill(m, battle(m, ...enemies.slice(0, 1))),
     ).toBeUndefined();
     const b = stepBattle(battle(m, ...enemies));
     expect(b.events.some((e) => e.label === "화염 폭발")).toBe(true);
     expect(b.units.slice(1).every((u, i) => u.hp < enemies[i].hp)).toBe(true);
   });
   it("수호자는 여러 근접 위협에 방벽을 사용한다", () => {
-    const g = unit("guardian", "g"),
+    const g = {...unit("guardian", "g"),skillIds:["shield"]},
       e1 = {
         ...unit("warrior", "e1", "enemy"),
         x: 130,
@@ -290,8 +290,8 @@ describe("스킬 데이터 조건과 자동 발동", () => {
       targetId: "boss",
     });
   });
-  it("8개 기본 직업에 전투 역할과 자동 스킬이 정의되어 있다", () => {
-    expect(Object.keys(COMBAT_PROFILES)).toHaveLength(8);
+  it("8개 현행 직업과 기존 음유시인에 자동 스킬이 정의되어 있다", () => {
+    expect(Object.keys(COMBAT_PROFILES)).toHaveLength(9);
     expect(
       Object.values(COMBAT_PROFILES).every((p) => p.skills.length > 0),
     ).toBe(true);
@@ -339,7 +339,7 @@ describe("전술의 실제 행동 차이", () => {
   });
   it("후위 보호는 가까운 적보다 지원자를 위협하는 적을 선택한다", () => {
     const a = unit("guardian", "a"),
-      h = { ...unit("priest", "h"), x: 250, y: 330 },
+      h = { ...unit("priest", "h"), x: 55, y: 330, home:{x:55,y:330} },
       near = { ...unit("warrior", "near", "enemy"), y: 175, threat: 1 },
       threat = {
         ...unit("warrior", "threat", "enemy"),
@@ -356,11 +356,11 @@ describe("전술의 실제 행동 차이", () => {
   it("집중 공격은 모든 전투원의 공통 목표를 바꾸며 능력치는 바꾸지 않는다", () => {
     const b = startBattle(newGuild()),
       focused = changeTactic(b, "focus");
-    expect(focused.focusId).toBe("goblin-4");
+    expect(focused.focusId).toBe("goblin-2");
     expect(
       focused.units
         .filter((u) => u.side === "party")
-        .every((u) => selectTarget(u, focused)?.id === "goblin-4"),
+        .every((u) => selectTarget(u, focused)?.id === "goblin-2"),
     ).toBe(true);
     expect(focused.units.map((u) => [u.attack, u.defense])).toEqual(
       b.units.map((u) => [u.attack, u.defense]),
@@ -372,7 +372,7 @@ describe("전술의 실제 행동 차이", () => {
     const b = changeTactic(battle(a, e), "retreat"),
       plan = decideIntent(a, b);
     expect(plan.kind).toBe("move");
-    if (plan.kind === "move") expect(plan.point.y).toBeGreaterThan(a.home.y);
+    if (plan.kind === "move") expect(plan.point.x).toBeLessThan(a.home.x);
     expect(b.escaping).toBe(false);
   });
 });

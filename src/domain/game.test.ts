@@ -13,12 +13,12 @@ describe("용병 생성과 성장", () => {
     expect(createMercenary("test")).toEqual(createMercenary("test"));
     expect(createMercenary("test")).not.toEqual(createMercenary("other"));
   });
-  it("여러 시드에서 남녀·3종족·8직업 모두 생성된다", () => {
+  it("여러 시드에서 남녀·7종족·8직업 모두 생성된다", () => {
     const roster = Array.from({ length: 400 }, (_, i) =>
       createMercenary(`seed-${i}`),
     );
     expect(new Set(roster.map((m) => m.gender)).size).toBe(2);
-    expect(new Set(roster.map((m) => m.race)).size).toBe(3);
+    expect(new Set(roster.map((m) => m.race)).size).toBe(7);
     expect(new Set(roster.map((m) => m.classId)).size).toBe(8);
   });
   it("큰 경험치 보상으로 여러 레벨이 오르며 능력치가 성장한다", () => {

@@ -26,8 +26,9 @@ export function stepBattle(input: CombatBattle, dt = FIELD.step): CombatBattle {
     throw Error("전투 스텝은 0~50ms 범위여야 합니다.");
   const b: CombatBattle = {
     ...input,
+    weaponXp:structuredClone(input.weaponXp??{}),
     units: input.units.map((u) => ({
-      ...u,
+      ...u,statuses:u.statuses?.filter(s=>s.until>input.elapsed).map(s=>({...s})),
       home: { ...u.home },
       skillCooldowns: { ...u.skillCooldowns },
     })),
@@ -109,7 +110,7 @@ export function stepBattle(input: CombatBattle, dt = FIELD.step): CombatBattle {
       a = b.units.find((u) => u.id === p.sourceId);
     if (!t || !a || !living(t)) continue;
     const d = distance(p, t);
-    if (d <= p.speed * dt + t.radius) applyDamage(b, a, t, p.damage);
+    if (d <= p.speed * dt + t.radius) applyDamage(b, a, t, p.damage,p.weaponAction??true);
     else {
       p.x += ((t.x - p.x) / d) * p.speed * dt;
       p.y += ((t.y - p.y) / d) * p.speed * dt;
@@ -119,7 +120,7 @@ export function stepBattle(input: CombatBattle, dt = FIELD.step): CombatBattle {
   b.projectiles = remaining;
   if (b.escaping)
     for (const u of b.units.filter(
-      (u) => u.side === "party" && living(u) && u.y >= FIELD.exitY,
+      (u) => u.side === "party" && living(u) && u.x <= FIELD.exitX,
     )) {
       u.escaped = true;
       u.action = "escaped";

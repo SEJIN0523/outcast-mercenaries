@@ -39,5 +39,6 @@ export function appearanceSignature(m: Mercenary) {
     m.classId,
     m.appearance,
     m.equipment,
+    m.battlePresetId,
   ]);
 }

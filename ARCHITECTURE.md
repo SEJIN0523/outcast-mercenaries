@@ -1,47 +1,36 @@
-# 기술 구조
+# 기술 구조 — 리뉴얼 v4
 
-## 기술 선택
+TypeScript strict + React 19 + Phaser 3 + Vite를 유지한다. 서버 없이 정적 배포하며 IndexedDB를 사용한다. main과 기존 GitHub Pages는 보존하고 `feature/game-renewal-v4`에서 개발한다.
 
-TypeScript strict, React, Vite, Phaser **3** 고정, IndexedDB(idb), Zod, Vitest, vite-plugin-pwa. 정적 파일 배포만으로 실행한다. 유료 API·계정·게임 서버는 사용하지 않는다. Node.js 22.12+ 권장.
+## 책임과 상태 흐름
 
-## 레이어와 의존성
+- `src/data`: 직업, 능력치 성장, 무기 요구치·피해 가중치·공격 형태, 숙련 등급, 자동 스킬 조건, 상태효과, 본체·장비 매니페스트.
+- `src/domain`: 시드 생성·모집·성장·장비·진형·전투. DOM/Phaser/DB에 의존하지 않는다.
+- `src/state/store.ts`: UI 명령, 상태 구독, 350ms 지연 자동 저장. 전투 중 모집·장비·편성 변경을 막는다.
+- `src/persistence/save.ts`: Zod 검증, v1→v2 마이그레이션, 직렬 IndexedDB 쓰기.
+- `src/render`: PNG 로딩·외형 레이어 합성·Phaser 표현. 피해 판정이나 보상을 계산하지 않는다.
+- `src/ui`: 독립 화면, 10슬롯 편성, 상세/장비 팝업, 전술 지휘, 갤러리.
 
-`src/data` 직업/장비/스킬 정의 → `src/domain` 순수 게임 로직 → `src/state` 명령과 구독 → `src/ui` React / `src/render` Phaser. 저장소는 `src/persistence`에 격리한다. 도메인은 DOM·Phaser·IndexedDB를 import하지 않는다. 렌더러는 상태를 읽고 게임 보상을 직접 변경하지 않는다.
+UI → 불변 상태 전이 → React/Phaser 구독. 전투는 50ms 고정 스텝이며 2배속은 같은 스텝을 두 번 실행한다. 숨겨진 탭·일시정지에서는 진행하지 않는다. 렌더링의 Tween·히트스톱은 시뮬레이션 시간을 바꾸지 않는다.
 
-## 데이터 흐름
+## 전투와 진형
 
-UI 명령 → 불변 상태 전이 → React useSyncExternalStore 및 Phaser 갱신. 전투는 50ms 고정 스텝의 순수 시뮬레이션을 사용한다. App이 타이머 하나를 소유하고 store가 진행/일시정지/배속을 제어한다. 2배속은 같은 스텝을 두 번 실행하며 Phaser는 위치를 보간하고 이벤트를 표현한다. 탭이 숨겨지면 타이머 진행을 멈추며 오프라인 전투 보상은 없다. 명령 오류는 사용자에게 표시한다.
+`data/party.ts`의 `NORMAL_PARTY_LIMIT=5`는 주인공을 포함한다. `combatParty`는 주인공 포함·중복 제거·상한을 보장한다. `formation.ts`는 전열 F1–F5와 후열 B1–B5 중 최대 5명을 배치하고, 이전 party만 있는 저장에는 기본 진형을 계산한다. 이동·교환·4개 기본 프리셋·사용자 진형 저장을 지원한다.
 
-## 저장
+`normalBattle.ts`는 일반 출전·적 구성·보상만 소유한다. `units.ts`는 공유 캐릭터와 장착 무기로 일시적인 전투 유닛을 생성한다. 무기가 사거리·공격 주기·근접/원거리/마법 공격을 결정하며 직업은 성장과 스킬에 영향을 준다.
 
-DB `outcast-guild`, store `saves`, key `main`. 세이브는 `{version:1, savedAt, state}`. Zod로 구조/범위 검증 후 ID 중복·파티 참조·후보 중복 등 의미적 무결성을 검증한다. 알려지지 않은 미래 버전은 거부하며 원본을 덮어쓰지 않는다. 버전 0은 legacy 필드가 정의된 경우에만 명시적 마이그레이션한다. 초기 MVP에 기존 배포 세이브가 없으므로 v0 입력은 거부한다.
+`commands.ts`가 `TacticalOrders`를 만들고 `ai.ts`가 목표·이동·자동 스킬을 판단한다. `simulation.ts`가 공통 스냅샷에서 행동을 결정하고 `spatial.ts`/`actions.ts`를 실행한다. 일반 근접은 살아 있는 전열을 우선 공격하고 원거리·도적·일부 전술은 우회한다. 근접은 접근→공격→복귀, 원거리는 홈에서 투사체를 사용한다. 보호는 후열 위협을 우선하고 유지·돌격은 추격 허용 행동이 다르다. 후퇴와 도주는 별도다.
 
-게임 변경 시 지연 자동 저장, 전투 중에는 전투 시작 시의 확정된 영속 상태를 보존하고 전투 완료 시 보상을 한 번 반영한다. 전투 중 새로고침은 의뢰를 중단하고 출발 전 상태로 돌아간다. 영속 데이터와 일시적인 battle 상태를 분리한다. 저장 요청은 직렬화해 오래된 쓰기가 최신 상태를 덮지 않도록 한다. 초기 로드 실패 시 자동 저장을 중지해 기존 데이터 보호; 사용자가 백업 복원 또는 명시적 저장으로 해제한다. 저장은 트랜잭션 완료 후 성공 표시한다.
+전투 HP·위치·쿨다운·보호막·상태효과는 캐릭터 영속 데이터에 쓰지 않는다. 실제 유효 행동의 무기 경험치는 전투 종료 시 반영하며 전투당 한 계열 90XP 상한, 보상 중복 방지 플래그를 사용한다. 승리만 120G와 출전자 각각 55XP를 지급한다.
 
-## PWA / 배포
+## 아트 경계
 
-프로덕션 빌드에서 manifest 및 service worker 생성. 앱 쉘과 번들/아이콘을 precache한다. 첫 접속은 네트워크가 필요하다. 업데이트는 사용자 선택 후 적용한다. 설치 이벤트가 없는 환경에서는 설치 안내를 표시한다. HTTPS 또는 localhost가 필요하다. GitHub Pages 경로는 configure-pages의 PAGES_BASE_PATH 또는 GITHUB_REPOSITORY에서 계산하고 Vite와 manifest id/start_url/scope, Service Worker fallback에 공통 적용한다. PWA는 portrait 방향을 요청한다. 일반 화면은 세로 앱의 하단 내비게이션을 사용하고, 전투는 별도 BattleScene과 DOM HP/전술 조작으로 전체 동적 뷰포트를 사용한다. 세부 규격은 PORTRAIT_UI.md를 참고한다.
+본체 256×320 투명 PNG와 무기·방패 PNG를 분리한다. `battle-presets.json`의 손·발 소켓, `equipment-art.json`의 gripAnchor/scale/rotation/layerOrder로 `battleArt.ts`가 합성한다. 생성된 이미지 캐시는 외형·장비 서명을 키로 사용한다. Phaser는 합성된 레이어를 같은 actor 컨테이너에서 이동·회전·점멸시킨다. 런타임 합성 캔버스는 원본 PNG를 변경하지 않는다.
 
-## 검증
+누락 본체는 기존 생성 아트/코드 도트로, 누락 장비 이미지는 간단한 실루엣으로 대체한다. 기존 음유시인 데이터와 류트 ID는 삭제하지 않는다. 8개 현행 직업 이외의 신규 완성 PNG는 제공하지 않는다. 상세 규격은 ASSET_SPEC.md와 ASSET_REPLACEMENT_GUIDE.md를 따른다.
 
-시드 결정성, 모집 경제/중복 방지, 파티 제약, 전투 승패/중복 보상, 직업 자동 스킬 조건/쿨다운·AI 이동/목표·전술별 추격/보호·도주, 다중 레벨업, 저장 round-trip/손상/미래버전/참조 무결성을 자동 테스트한다. 브라우저에서 PC/모바일 화면과 프로덕션 오프라인 캐시를 확인한다.
+## 저장·PWA·배포
 
-## 참고한 공식 문서
+DB `outcast-guild` / DB schema version 1 / store `saves` / key `main`을 유지한다. JSON envelope만 version 2다. v1은 ID·레벨·XP·골드·기존 장비·외형 seed를 보존하며 능력치·숙련도 기본값과 자유 진형을 추가한다. 읽기만으로 원본을 덮어쓰지 않는다. 미래 버전·중복·없는 참조·잘못된 프리셋·양손무기와 방패 조합은 거부한다. 로드 실패 시 자동 저장을 중지해 원본을 보호한다. 전투 중 새로고침은 출발 전 상태로 돌아간다.
 
-- Phaser 설치: https://docs.phaser.io/phaser/getting-started/installation
-- Vite PWA: https://vite-pwa-org.netlify.app/guide/
-- Service Worker 등록: https://vite-pwa-org.netlify.app/guide/register-service-worker
-
-## 일반 전투 인원과 주인공
-
-NORMAL_PARTY_LIMIT은5이며 주인공을 포함한다. combatParty는 기존 저장 배열을 덮어쓰지 않고 주인공 포함/중복제거/상한5의 유효 명단을 계산한다. 원거리/전위별 인원에 따라 진형 좌표를 산출한다. 주인공은 같은 CombatUnit과 AI를 사용하지만 초기 skillIds는 빈 배열이다. 보상은 주인공을 포함한 participants 모두에게 지급한다. version1 party는1~5명을 허용하는 호환 확장이며 전쟁의20인 명단은 현재 런타임/세이브에 구현하지 않는다. 공격 우선순위는 비영속 전투 상태로 관리한다.
-
-## 현재 전투 모듈 경계
-
-- 공유 데이터: 캐릭터/능력치/장비는 기존 types/catalog/characters, 자동 스킬은 data/skills.ts, 기존 보호막 효과는 data/statusEffects.ts와 domain/statusEffects.ts에서 관리한다. 전투 유형별 성장 복사본은 없다.
-- normalBattle.ts: 일반 전투 출전·배치·고블린 구성·보상. units.ts의 createCombatant로 공유 캐릭터를 일시적 전투 유닛으로 만든다.
-- commands.ts: 전술·공격 우선순위·집중 목표·도주 명령과 TacticalOrders 스냅샷. ai.ts는 명령을 입력받아 각 유닛의 행동을 결정한다.
-- simulation.ts: 50ms 스텝 진행. spatial.ts의 이동 공간 처리와 actions.ts의 공격·피격·자동 스킬·이벤트를 조합한다. 일반 출전 상한이나 성장 보상 계산에 의존하지 않는다.
-- domain/battle.ts는 기존 호출 API를 유지한다. React/Phaser는 같은 상태와 이벤트를 구독하며 시뮬레이션에서 브라우저 API를 참조하지 않는다.
-
-일반 인원 설정은 data/party.ts의 NORMAL_PARTY_LIMIT=5다. 편성·저장 검증·출전·아군 UI 슬롯이 이 값을 사용한다. 이번 구조 분리로 저장 스키마나 전투 규칙을 바꾸지 않는다. 변경 전 리플레이 스냅샷으로 이동·피해·스킬·종료 결과를 비교한다. 미래 확장 지점은 [FUTURE_WAR_SYSTEM.md](FUTURE_WAR_SYSTEM.md)에만 기록한다.
+Vite base, manifest id/start_url/scope, SW fallback은 같은 Pages 경로 resolver를 사용한다. 별도 Sites 미리보기 빌드는 PAGES_BASE_PATH=/를 사용한다. 앱/PNG/아이콘을 precache하고 portrait·standalone 설치를 지원한다. `100dvh`와 safe-area를 사용한다. 전쟁 전용 코드나 빈 추상 계층은 없으며 확장 지점은 FUTURE_WAR_SYSTEM.md에만 기록한다.

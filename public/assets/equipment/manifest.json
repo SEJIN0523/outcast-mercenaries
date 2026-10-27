@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "equipmentId": "sword",
+      "weaponType": "sword",
+      "imagePath": "assets/equipment/sword.png",
+      "width": 128,
+      "height": 384,
+      "gripAnchor": {
+        "x": 0.50390625,
+        "y": 0.823125
+      },
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scale": 0.52,
+      "layerOrder": 20,
+      "source": "docs/art/v4-equipment-sources/sword.png"
+    },
+    {
+      "equipmentId": "greatsword",
+      "weaponType": "greatsword",
+      "imagePath": "assets/equipment/greatsword.png",
+      "width": 128,
+      "height": 384,
+      "gripAnchor": {
+        "x": 0.50390625,
+        "y": 0.8329166666666666
+      },
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scale": 0.53,
+      "layerOrder": 20,
+      "source": "docs/art/v4-equipment-sources/greatsword.png"
+    },
+    {
+      "equipmentId": "dagger",
+      "weaponType": "dagger",
+      "imagePath": "assets/equipment/dagger.png",
+      "width": 128,
+      "height": 384,
+      "gripAnchor": {
+        "x": 0.5,
+        "y": 0.7396614583333334
+      },
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scale": 0.28,
+      "layerOrder": 20,
+      "source": "docs/art/v4-equipment-sources/dagger.png"
+    },
+    {
+      "equipmentId": "axe",
+      "weaponType": "axe",
+      "imagePath": "assets/equipment/axe.png",
+      "width": 160,
+      "height": 384,
+      "gripAnchor": {
+        "x": 0.4175000000000001,
+        "y": 0.7447916666666666
+      },
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scale": 0.48,
+      "layerOrder": 20,
+      "source": "docs/art/v4-equipment-sources/axe.png"
+    },
+    {
+      "equipmentId": "spear",
+      "weaponType": "spear",
+      "imagePath": "assets/equipment/spear.png",
+      "width": 96,
+      "height": 384,
+      "gripAnchor": {
+        "x": 0.5052083333333334,
+        "y": 0.6175
+      },
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scale": 0.7,
+      "layerOrder": 20,
+      "source": "docs/art/v4-equipment-sources/spear.png"
+    },
+    {
+      "equipmentId": "bow",
+      "weaponType": "bow",
+      "imagePath": "assets/equipment/bow.png",
+      "width": 192,
+      "height": 384,
+      "gripAnchor": {
+        "x": 0.5437500000000001,
+        "y": 0.5
+      },
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scale": 0.52,
+      "layerOrder": 20,
+      "source": "docs/art/v4-equipment-sources/bow.png"
+    },
+    {
+      "equipmentId": "staff",
+      "weaponType": "staff",
+      "imagePath": "assets/equipment/staff.png",
+      "width": 128,
+      "height": 384,
+      "gripAnchor": {
+        "x": 0.5,
+        "y": 0.6566666666666667
+      },
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scale": 0.65,
+      "layerOrder": 20,
+      "source": "docs/art/v4-equipment-sources/staff.png"
+    },
+    {
+      "equipmentId": "club",
+      "weaponType": "club",
+      "imagePath": "assets/equipment/club.png",
+      "width": 160,
+      "height": 384,
+      "gripAnchor": {
+        "x": 0.5,
+        "y": 0.7643749999999999
+      },
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scale": 0.4,
+      "layerOrder": 20,
+      "source": "docs/art/v4-equipment-sources/club.png"
+    },
+    {
+      "equipmentId": "shield",
+      "weaponType": null,
+      "imagePath": "assets/equipment/shield.png",
+      "width": 256,
+      "height": 320,
+      "gripAnchor": {
+        "x": 0.501953125,
+        "y": 0.5
+      },
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scale": 0.4,
+      "layerOrder": 30,
+      "source": "docs/art/v4-equipment-sources/shield.png"
+    }
+  ]
+}

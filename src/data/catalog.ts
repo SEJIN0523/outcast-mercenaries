@@ -73,7 +73,7 @@ export const CLASSES: Record<
     advanced: ["철벽창병 · 전쟁군주", "천공기사 · 비룡기사"],
   },
   guardian: {
-    name: "수호자",
+    name: "기사",
     role: "체력이 높은 방어수",
     color: "#a79463",
     stats: { hp: 130, attack: 12, defense: 9, speed: 4 },
@@ -81,6 +81,12 @@ export const CLASSES: Record<
     weapon: "sword",
     branches: ["방패기사", "파수꾼"],
     advanced: ["성채기사 · 왕실근위", "결계수호자 · 숲의수호자"],
+  },
+  alchemist: {
+    name: "연금술사", role: "약병과 회복제를 사용하는 후열", color: "#6faaa0",
+    stats: { hp: 72, attack: 18, defense: 2, speed: 9 },
+    growth: { hp: 8, attack: 4, defense: 0.6, speed: 0.4 },
+    weapon: "flask", branches: ["약제사", "폭약사"], advanced: ["생명연구자", "연성술사"],
   },
   bard: {
     name: "음유시인",
@@ -122,6 +128,10 @@ export const EQUIPMENT: Record<
   string,
   { name: string; spriteKey: string; bonus: Partial<Stats> }
 > = {
+  greatsword:{name:'보병 양손검',spriteKey:'weapon/greatsword',bonus:{attack:3}},
+  axe:{name:'견습 도끼',spriteKey:'weapon/axe',bonus:{attack:2}},
+  club:{name:'튼튼한 둔기',spriteKey:'weapon/club',bonus:{attack:2}},
+  flask: { name: "여행용 연금 도구", spriteKey: "weapon/alchemy-kit", bonus: { attack: 2 } },
   sword: {
     name: "낡은 철검",
     spriteKey: "weapon/iron-sword",
@@ -168,4 +178,4 @@ export const SKILLS = {
     description: "부상한 아군을 우선 치유한다.",
   },
 };
-export const RACES = { human: "인간", elf: "엘프", dwarf: "드워프" };
+export const RACES = {human:"인간",elf:"엘프","dark-elf":"다크 엘프","half-elf":"하프엘프",catkin:"고양이 수인",foxkin:"여우 수인",wolfkin:"늑대 수인",dwarf:"드워프"};

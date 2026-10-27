@@ -1,5 +1,8 @@
 import { CLASSES, EQUIPMENT, TRAITS } from "../data/catalog";
+import {ATTRIBUTE_GROWTH,ATTRIBUTE_BASE,SHIELDS} from "../data/weapons";
+import {weaponPower,attributesOf} from "./equipment";
 import { random } from "./random";
+import { generatedPresetId } from "./battlePresets";
 import { generateCosmetics } from "./appearance";
 import type { ClassId, Mercenary, Stats } from "./types";
 export const isHero = (m: Mercenary) => m.story === "hero" || m.id === "hero";
@@ -16,7 +19,7 @@ export function generateMercenary(seed: string): Mercenary {
   const rng = random(seed);
   const pick = <T>(a: T[]) => a[Math.floor(rng() * a.length)];
   const gender = pick<"male" | "female">(["male", "female"]);
-  const classId = pick(Object.keys(CLASSES) as ClassId[]);
+  const classId = pick(Object.keys(CLASSES).filter(id=>id!=="bard") as ClassId[]);
   const name =
     gender === "male"
       ? pick(["에단", "카일", "루카", "테오", "렌", "아론", "시온", "로웬"])
@@ -25,7 +28,7 @@ export function generateMercenary(seed: string): Mercenary {
     id: `merc-${seed}`,
     name,
     gender,
-    race: pick(["human", "elf", "dwarf"]),
+    race: pick(["human", "elf", "dark-elf", "half-elf", "catkin", "foxkin", "wolfkin"]),
     classId,
     level: 1,
     xp: 0,
@@ -38,9 +41,13 @@ export function generateMercenary(seed: string): Mercenary {
       hairColor: pick(HAIR),
       skinColor: pick(SKIN),
       bodyType: Math.floor(rng() * 3),
+      bodyPreset:gender==="female"?pick(["petite","slim","standard","curvy"]):pick(["slim","standard","broad"]),
       ...generateCosmetics(seed, classId),
     },
-    equipment: { weapon: CLASSES[classId].weapon, armor: "cloth" },
+    coreStats:{...ATTRIBUTE_BASE[classId]},
+    weaponProficiency:{},
+    battlePresetId: generatedPresetId(seed,classId,gender),
+    equipment: { weapon: CLASSES[classId].weapon, armor: "cloth",...(classId==="guardian"?{shield:"wood-shield"}:{}) },
   } satisfies Mercenary;
 }
 export const createMercenary = generateMercenary;
@@ -56,6 +63,8 @@ export function statsOf(m: Mercenary): Stats {
         (EQUIPMENT[m.equipment.armor]?.bonus[key] ?? 0),
     );
   }
+  result.attack=weaponPower(m)+(TRAITS[m.traitId]?.bonus.attack??0);
+  result.defense+=m.equipment.shield?(SHIELDS[m.equipment.shield]?.defense??0):0;
   return result;
 }
 export const xpNeeded = (level: number) => level * 40;
@@ -67,6 +76,7 @@ export function gainXp(m: Mercenary, amount: number): Mercenary {
     level++;
   }
   if (level === 50) xp = 0;
-  return { ...m, level, xp };
+  const coreStats=attributesOf(m),growth=ATTRIBUTE_GROWTH[m.classId];for(const key of Object.keys(coreStats) as (keyof typeof coreStats)[])coreStats[key]+=growth[key]*(level-m.level);
+  return { ...m, level, xp,coreStats };
 }
 export const recruitCost = (m: Mercenary) => 45 + (m.talent + m.potential) * 6;

@@ -1,84 +1,42 @@
-# 도트 에셋 리플레이스 지시서
+# 에셋 리플레이스 지시서 — v4
 
-## 현재 에셋과 원본
+## 어디를 교체하는가
 
-Mosslight v2는 외부 이미지 생성 모델·외부 게임 이미지 없이 이 저장소에서 직접 작성한 픽셀 드로잉이다. 런타임 원본은 TypeScript이며, PNG는 같은 함수를 실행해 내보낸 참조본이다. public/art 바로 아래의 예전 PNG는 참조본이다. **public/art/generated의 신규 아틀라스는 실제 게임에서 읽는다.** 고정 초기 동료/고블린은 생성 PNG, 랜덤 및 커스텀 인물은 저장 외형의 Canvas 합성을 사용한다. 적용 범위와 재패킹은 [GENERATED_ASSETS.md](GENERATED_ASSETS.md)를 따른다.
+- 본체 PNG: `public/assets/battle_units/{job}/{presetId}.png`
+- 본체 데이터(런타임 원본): `src/data/battle-presets.json`
+- 공개 도감용 매니페스트: `public/assets/battle_units/manifest.json`
+- 장비 PNG: `public/assets/equipment/{equipmentId}.png`
+- 장비 데이터(런타임 원본): `src/data/equipment-art.json`
+- 공개 장비 매니페스트: `public/assets/equipment/manifest.json`
+- 합성/로딩: `src/render/battleArt.ts`, 사용처는 `sprite.ts`와 `BattleScene.ts`.
 
-| 파일 | 용도 / 교체 위치 |
-| --- | --- |
-| `src/render/sprite.ts` | 남녀·직업·종족·피부·헤어·체형·무기 합성. `drawMercenary`, `portrait` |
-| `src/render/goblin.ts` | 고블린 전사·궁수·대장. `drawGoblin` |
-| `src/render/battlefield.ts` | 360×420 숲 공터. `drawBattlefield` |
-| `src/render/pixels.ts` | 정수 사각형·스캔라인 다각형·팔레트 명암. 안티앨리어싱 없는 드로잉 |
-| `src/render/combatAppearance.ts` | 방향·행동·걷기 프레임 → 텍스처 키. 전투 판정은 하지 않음 |
-| `src/render/BattleScene.ts` | 전투 텍스처 생성·교체, 피벗, 공격/피격/사망 효과 |
-| `src/render/GuildScene.ts` | 기존 본부 배경과 캐릭터 표시. 본부 배경은 이번에 교체하지 않음 |
-| `scripts/export-art.mjs` | 같은 원본에서 PNG 시트·메타데이터 생성 및 합성 검증 |
+**캐릭터의 저장 ID나 기존 preset ID를 새로 발급하지 않고 같은 ID의 PNG를 교체하면 기존 용병에 적용된다.** 새 프리셋 추가 시 기존 항목은 제거하지 않는다. 삭제된 에셋을 참조하는 저장을 만들지 않는다.
 
-실행은 `npm ci`, `npx playwright install chromium`, `npm run art:export` 순서다. 내보내기는 로컬 Vite 서버와 Chromium Canvas만 사용하며 외부 AI/API를 호출하지 않는다. 생성 파일은 `public/art/`에 쓴다. 아트 도감은 개발 서버의 `/art/`, Pages에서는 `/outcast-mercenaries/art/`에 있다.
+## 본체 교체 절차
 
-## 랜덤 베리에이션과 생성 시안
+1. 원본과 교체 전 PNG를 별도 버전 파일 또는 Git 커밋으로 보존한다.
+2. 무기·방패 없는 256×320 RGBA 정지 전신을 만든다. 오른쪽 3/4 시점, 발(128,306), 양손 허리 높이 빈 주먹, 동일 픽셀 밀도를 유지한다. 여성·남성 모두 성인이다.
+3. `weaponSocket`을 주먹의 실제 그립 중심, `shieldSocket`을 반대손 중심에 맞춘다. anchor는 normalized 발 좌표다. renderHeight는 캔버스 전체 표시 높이이며 다른 프리셋과 실제 몸 높이를 맞춘다.
+4. 새 이미지/프리셋을 추가하면 `id,classId,job,gender,bodyType,bodyAssetId,advancementTier,facing,file,resolution,anchor,weaponSocket,shieldSocket,renderHeight`를 등록한다. 얼굴·헤어 정체성은 영속 appearance의 선택적 식별자로 보존할 수 있다. 현재 프리셋의 얼굴·헤어·복장은 한 PNG이며 독립 색상 교체를 완전 지원하지는 않는다.
+5. 공개 매니페스트를 같은 데이터로 갱신하고 캐시된 이전 SW 업데이트를 적용한 뒤 갤러리에서 확인한다.
 
-현재 런타임 도트 원본은 코드 제작이며, public/art/archer-concept-v1.png는 사용자가 승인한 이미지 생성 그림체의 베리에이션 시안이다. 생성 시안을 게임용 레이어로 분리·규격화하는 작업은 아직 하지 않았다. 현재 UI와 전투에는 기존 드로잉의 랜덤 조합이 적용된다.
+현재 baker를 다시 실행하면 생성 원본에서 PNG와 소켓 추정값을 다시 쓴다. 수동으로 보정한 소켓을 baker에 반영하거나 별도 보정 데이터로 유지한 뒤 재패킹한다. 정식 이미지 교체 후 원본 생성 baker를 무심코 실행하지 않는다.
 
-새 용병은 기존 피부 4색·머리 6색·헤어4형·체형3종에 더해 eyeColor(6색), outfitColor(직업별6색), outfitStyle(0~2), weaponStyle(0~2)를 저장한다. 색 팔레트는 src/data/appearance.ts, 독립 시드 cosmetics-v1은 src/domain/appearance.ts에 있다. 임의 RGB 대신 직업별 팔레트를 사용한다. 복장은 기본·짧은 재킷·분할 코트, 무기는 장비 종류별 기본·변형1·변형2로 처리한다. 실제 무기 ID와 능력치·공격 종류는 바뀌지 않는다. 무기 실루엣은 src/render/weaponVariants.ts에 있다.
+## 무기·방패 교체 절차
 
-버전1 세이브에서 새 필드는 선택 사항이다. 기존 인물의 누락 필드는 재추첨하지 않고 예전 기본 색/형태로 표시한다. 새 모집부터 확장 외형을 사용한다. 후보 새로고침은 새 인물을 생성하는 동작이며, 모집·전직·새로고침 화면 렌더 때문에 기존 인물의 외형을 다시 뽑지 않는다. 이미지 교체 때도 저장된 외형을 존중하고, 사용자가 가진 캐릭터를 새 이미지의 고정 피부/머리로 덮어쓰지 않는다.
+`equipment-art.json`의 `equipmentId,imagePath,width,height,gripAnchor,offsetX,offsetY,rotation,scale,layerOrder`를 갱신한다. gripAnchor는 이미지 안에서 손잡이 중심의 0~1 좌표다. 투명 여백까지 포함한 width/height와 일치해야 한다. scale은 256×320 본체 좌표 기준이다. 한 장비가 모든 본체에서 같은 grip 기준으로 재사용된다.
 
-정식 이미지 제작은 각 레이어의 기본형과 변형 마스크/팔레트를 확보한다. 눈·피부·머리·옷 영역은 독립 색상 마스크, 복장·무기 형태는 별도 프레임으로 제작한다. 피부와 눈색의 조합에 성능·성격·등급 보너스를 연결하지 않는다. 변형마다 같은 손잡이·피벗·방향 규격을 지켜 공용 본체와 합성할 수 있게 한다. 생성된 6인 비교 이미지를 그대로 무작위로 고르는 것을 최종 레이어 조합으로 간주하지 않는다.
+본체의 무기 손은 (개별 socket), 장비는 `translate(socket+offset) → rotate → scale → draw(-grip*size)`로 연결된다. 그립 앞의 작은 주먹 패치를 다시 그려 잡고 있는 인상을 만든다. 방패는 반대손 위에 표시한다. 레이어는 기본 본체10/무기20/방패30 순서다. 복잡한 앞뒤 무기 자세가 필요하면 합성 경계만 수정하고 전투 계산은 바꾸지 않는다.
 
-## 납품 규격
+양손 장비 플래그는 그래픽 매니페스트가 아니라 `src/data/weapons.ts`의 `twoHanded`를 변경한다. 요구 능력치·공격 타입·숙련 계열도 이 데이터에서 관리한다. 그림 교체만으로 공격력을 바꾸지 않는다.
 
-- RGBA PNG, 캐릭터 프레임 **64×80px**, 프레임을 자동으로 잘라내지 않는다.
-- 발 기준점 **(32, 74)**. Phaser origin은 **(0.5, 0.925)**. 프레임마다 기준점이 흔들리지 않아야 한다.
-- 그림자 외에는 불필요한 반투명 외곽·흰 테두리·안티앨리어싱을 넣지 않는다. nearest-neighbor로 확인한다.
-- 표준 외곽색 `#242638`, 금속 3단 명암, 피부·머리 각 기본색+밝음+어두움. 의상은 직업별 기존 색을 기준으로 구분한다. 24색은 권장치이며 합성 결과는 팔레트 조합에 따라 초과할 수 있다.
-- 방향 순서: **down, left, right, up**. 현재 옆모습은 3/4 표현이며 좌우는 거울 대칭이다. 정면을 어둡게 칠해 뒷모습으로 대체하지 않는다.
-- 각 방향 걷기 4프레임, 기준 프레임 0은 대기에도 사용한다. 현재 공격·피격·사망은 별도 원화 시퀀스 없이 기존 이동/색조/회전 효과를 사용한다. 완전한 방향별 공격 애니메이션은 아직 없다.
-- 헤어 0=짧은 머리, 1=단발, 2=긴 머리, 3=묶은 머리. 체형 0=보통, 1=가늘게, 2=넓게. 인간/엘프 귀/드워프 키·수염, 기존 피부·머리색을 보존한다.
+## 필수 확인
 
-## PNG 시트 좌표
+- 갤러리에서 남녀·지원 체형·8직업, 8무기, 방패3크기, 좌우 반전, 소켓 표시.
+- 발 기준이 흔들리지 않고 전신/무기 끝이 잘리지 않음. 손잡이 위치·레이어·피부 패치 정렬.
+- 인간/엘프/수인 레이어의 귀와 꼬리 중복·의상 침범. 현재 단순 레이어이므로 본체가 바뀌면 재검수.
+- 360×800/390×844/412×915의 1대1/2대2/5대5, 전열5/후열0·1/4·0/5.
+- 투사체·근접 돌진/복귀·피격·사망에서 장비가 몸과 함께 움직임.
+- `npm test`, `npm run build`, `npm run test:e2e` 통과. 누락 PNG 대체·저장 후 재접속도 확인.
 
-`manifest.json`을 좌표 기준으로 사용한다. 0부터 세는 열/행에 대해 crop은 `x=열×64`, `y=행×80`, `w=64`, `h=80`이다.
-
-| 파일 | 크기 | 행 / 열 |
-| --- | --- | --- |
-| `characters.png` | 1024×1280 | 16행: 남성 8직업 다음 여성 8직업. 각 성별 전사·궁수·마법사·사제·도적·창병·수호자·음유시인 순서 |
-| `goblins.png` | 1024×240 | 3행: fighter, archer, chief |
-| `layers-reference.png` | 1024×640 | 아래 8개 레이어 순서. 남성 전사 1명의 참조용이므로 뒷머리/방패 행은 비어 있음 |
-| 위 3개 시트의 열 | 16열 | down 0~3, left 0~3, right 0~3, up 0~3. `열=방향번호×4+걷기프레임` |
-| `class-preview.png` | 1024×400 | 확대 비교용. 라벨 포함, 게임 프레임으로 잘라 쓰지 않음 |
-| `forest-clearing.png` | 360×420 | 전투 필드 전체. 장식에 충돌 판정 없음 |
-
-레이어 순서는 **shadow → hairBack → body → armor → face → hair → weapon → shield**다. 모두 같은 64×80 캔버스/방향/프레임/피벗을 쓴다. 분리 이미지를 얻으려면 `drawMercenary(ctx, character, direction, frame, layer)`를 호출한다. 호출마다 캔버스가 지워지므로 별도 캔버스에 순서대로 합성한다. 내보내기 스크립트에 이 과정의 실제 예제가 있다.
-
-## 교체 경로 A: 외부 도구 없이 계속 개선
-
-1. 위 드로잉 파일에서 필요한 레이어만 편집한다. 능력치·직업 ID·장비 ID·저장 외형을 변경하지 않는다.
-2. 무기는 `EQUIPMENT[character.equipment.weapon].spriteKey`를 사용한다. 현재 방어구 종류는 traveler 하나이며 직업 의상 변형을 그린다. 향후 방어구가 늘면 armor의 spriteKey 분기를 이 렌더링 경계에 추가한다. 수호자의 방패는 현재 직업 표현이며 별도 방패 장착 슬롯은 아니다.
-3. `npm run art:export`로 PNG와 도감을 다시 만든다. 예전 PNG를 남기고 원본 함수만 바꾼 상태로 커밋하지 않는다.
-4. 도감과 실제 모바일 전투에서 가독성·겹침·레이어를 확인한다.
-
-## 교체 경로 B: 나중에 정식 PNG/atlas를 받았을 때
-
-1. 원본을 `src/assets/art/` 등 Vite가 관리하는 폴더에 추가해 import URL을 사용한다. public 경로를 쓸 경우 `import.meta.env.BASE_URL`을 붙여 Pages 하위 경로에서도 로드한다. `/art/...` 같은 루트 고정 URL은 사용하지 않는다.
-2. 최초 납품은 한 직업/무기/방향부터 연결한다. 기존 드로잉을 누락 프레임의 fallback으로 유지한다. 16명의 샘플 완성 PNG만으로 모든 랜덤 외형을 대체하지 않는다. 본체·피부 팔레트·헤어·의상·무기 레이어를 받아 저장된 조합을 재현한다.
-3. 비동기 이미지 로딩을 먼저 완료한 후 동기 `drawMercenary` 안에서 로드된 레이어를 `drawImage`로 합성한다. React의 `portrait`와 Phaser 양쪽이 같은 합성 경로를 사용하게 한다. 미완료 이미지를 캐시한 경우 로딩 후 초상 캐시를 무효화하고 UI를 갱신한다.
-4. Phaser는 `BattleScene.texture`를 atlas key/frame으로 연결하거나 현재 Canvas 합성을 유지한다. `combatAppearance`의 방향/프레임 해석, `setTexture`, origin을 함께 확인한다. 왼쪽 원화가 있으면 다시 flipX하지 않는다. 장비·외형 교체 시 텍스처 키에 시각 버전을 반영하거나 해당 캐시를 지운다.
-5. 고블린 3종은 `drawGoblin` 또는 같은 texture 경계에서 교체한다. 전장은 `drawBattlefield` 대신 로드된 배경을 쓰도록 `BattleScene.create`를 바꾼다. 장식의 모양만 바꾸고 길찾기/충돌 규칙을 임의로 추가하지 않는다.
-6. 늘어난 애니메이션은 프레임 목록과 동작 시간을 명시한다. 렌더 프레임을 근거로 피해·스킬·쿨다운을 판정하지 않는다. 전투 이벤트를 표현에만 사용한다.
-7. 앱 번들/서비스 워커를 재빌드한다. 기존 PWA의 업데이트 적용 후 새 그림이 보이는지 확인한다. 저장 DB를 삭제해 캐시 문제를 해결하지 않는다.
-
-## 검증 및 인수 조건
-
-`npm run art:export`의 112개 레이어 합성/결정성 검사 및 96개 시각 변화 검사, `npm test`, Pages 경로의 `npm run build`와 `npm run test:e2e`를 통과시킨다. 남녀 8직업·3종족·4헤어·피부색·체형·무기·방향을 검토한다. 특히 긴 머리와 방패, 창끝, 마법사 모자, 드워프 수염, 대장 왕관의 잘림을 확인한다.
-
-360×800 / 390×844 / 412×915, 축소 높이와 safe-area, 일시정지·2배속·사망·도주에서 HP/전술 버튼이 가려지지 않아야 한다. 구 세이브의 인물·레벨·장비·골드·외형이 유지되어야 한다. 공개 Pages의 실제 JS·PNG·PWA 응답을 확인한 뒤 배포 성공을 보고한다. Android 실기기 검증 여부는 별도로 명시한다.
-
-## 다음 작업자에게 그대로 전달할 지시
-
-> ASSET_REPLACEMENT_GUIDE.md와 ASSET_SPEC.md를 먼저 읽으세요. 현재 Mosslight v2의 64×80 프레임, 발 피벗(32,74), 4방향×4걷기프레임, 8레이어 순서를 유지하며 전달한 에셋을 연결하세요. PNG 참조본만 바꾸지 말고 실제 sprite.ts / goblin.ts / BattleScene의 렌더 경계를 수정하세요. 랜덤 피부·헤어·성별·종족·장비 조합과 기존 저장, 5인 자동전투를 보존하세요. 불완전한 납품에는 기존 드로잉 fallback을 유지하고, 전투 로직을 변경하지 마세요. 도감 PNG 재생성, 모바일 검증, 테스트 결과와 실제 교체된 범위를 보고하세요. 정식 공격/피격/사망 원화가 없다면 구현됐다고 보고하지 마세요.
-
-## 생성 PNG 팩 교체
-
-실제 소비 파일은 public/art/generated의 6개 아틀라스다. 프레임64×80, 열 down/left/right/up, 행 male/female 또는 fighter/archer/chief를 유지하면 로더를 바꾸지 않고 교체할 수 있다. 큰 생성 원본은 docs/art/sources에 보관하고 npm run art:bake로 패킹한다. 코드형 참조본의 npm run art:export와 구분한다. 원본이 바뀌면 bake 스크립트의 좌우 매핑과 행 범위를 재검수한다. 고정 서명이 다른 캐릭터는 fallback을 유지한다. 분리 레이어가 준비되기 전 랜덤 인물에게 고정 완성 PNG를 무작위로 붙이지 않는다.
+운영 main/Pages에 바로 덮어쓰지 않고 개발 브랜치와 분리 미리보기에서 먼저 검증한다. 도구·프롬프트·실제 수량은 GENERATED_ASSETS.md에 기록한다.

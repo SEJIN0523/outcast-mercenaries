@@ -1,0 +1,40 @@
+import {describe,it,expect} from 'vitest';
+import {newGuild,candidatesFor,combatParty} from './guild';
+import {formationPreset,formationSlots,formationIds,placeCharacter,saveFormation,loadFormation} from './combat/formation';
+import {startBattle,stepBattle,applyReward} from './battle';
+import {selectTarget,chooseAutoSkill} from './combat/ai';
+import {applyDamage,useAutomaticSkill} from './combat/actions';
+import {createCombatant} from './combat/units';
+import {equipWeapon,equipShield,attributesOf,mastery,gainWeaponXp} from './equipment';
+import {gainXp,statsOf} from './characters';
+import {BATTLE_PRESETS,presetFor} from './battlePresets';
+import {WEAPONS} from '../data/weapons';
+import {encodeSave,decodeSave} from '../persistence/save';
+import legacy from '../../e2e/fixtures/v1-save.json';
+import type {ClassId} from './types';
+describe('10슬롯 자유 진형',()=>{
+ for(const [mode,f,b] of [['all-front',5,0],['rear-focus',1,4],['all-rear',0,5]] as const)it(`${f}/${b} 배치로 실제 출전한다`,()=>{const g=newGuild();g.formation=formationPreset(g,mode);const rows=formationIds(g);expect(rows.front).toHaveLength(f);expect(rows.rear).toHaveLength(b);const battle=startBattle(g);expect(battle.participants).toHaveLength(5);expect(new Set(battle.units.slice(0,5).map(u=>`${u.home.x},${u.home.y}`)).size).toBe(5);});
+ for(const n of [1,2,5])it(`${n} 대 ${n} 전투가 종료되고 유효한 수치를 유지한다`,()=>{const g=newGuild();g.party=combatParty(g).slice(0,n).map(m=>m.id);let b=startBattle(g,{enemyCount:n});for(let i=0;i<3600&&b.status==='active';i++)b=stepBattle(b);expect(b.status).not.toBe('active');expect(b.units).toHaveLength(n*2);expect(b.units.every(u=>Number.isFinite(u.x)&&u.hp>=0&&u.hp<=u.maxHp)).toBe(true);});
+ it('슬롯 간 교환은 인원을 유지하며 중복을 만들지 않는다',()=>{const g=newGuild(),before=formationSlots(g),slot=Object.entries(before).find(([,id])=>id==='ria')![0] as 'B1';const changed=placeCharacter(g,slot,'hero');expect(formationSlots(changed)[slot]).toBe('hero');expect(combatParty(changed)).toHaveLength(5);expect(new Set(Object.values(formationSlots(changed))).size).toBe(5);expect(formationSlots(g)).toEqual(before);});
+ it('직업 배치 제한 없이 궁수를 전열, 전사를 후열로 옮긴다',()=>{let g=newGuild();g=placeCharacter(g,'F5','ria');g=placeCharacter(g,'B5','hero');expect(g.formation?.slots.F5).toBe('ria');expect(g.formation?.slots.B5).toBe('hero');});
+ it('저장한 자유 진형을 복원한다',()=>{let g=newGuild();g.formation=formationPreset(g,'all-rear');g=saveFormation(g,'후열');g.formation=formationPreset(g,'all-front');g=loadFormation(g,g.formationPresets![0].id);expect(formationIds(g).front).toHaveLength(0);expect(decodeSave(encodeSave(g))).toEqual(g);});
+ it('일반 근접은 전열을 먼저 공격하고 전열이 없으면 후열에 접근한다',()=>{const b=startBattle(newGuild()),a=b.units[0],front=b.units.find(u=>u.side==='enemy'&&u.role==='melee')!,back=b.units.find(u=>u.side==='enemy'&&u.role==='ranged')!;a.targetId=back.id;back.threat=100;expect(selectTarget(a,b)?.id).not.toBe(back.id);b.units=b.units.filter(u=>u.side==='party'||u===back);expect(selectTarget(a,b)?.id).toBe(back.id);expect(front.side).toBe('enemy');});
+});
+describe('직업과 독립된 장비·성장·숙련',()=>{
+ it('모든 직업은 충분한 능력치로 8개 무기를 장착한다',()=>{for(const classId of ['warrior','guardian','archer','mage','priest','rogue','lancer','alchemist'] as ClassId[]){const m={...newGuild().roster[0],classId,coreStats:{STR:30,DEX:30,VIT:30,INT:30,SPI:30}};for(const id of Object.keys(WEAPONS)){const e=equipWeapon(m,id),u=createCombatant(e,0,{x:55,y:178});expect(u.attackMode).toBe(WEAPONS[id].mode);expect(u.range).toBe(WEAPONS[id].range);}}});
+ it('능력치 부족은 직업과 무관하게 명확히 거부한다',()=>{const m=newGuild().roster[0];expect(()=>equipWeapon(m,'greatsword')).toThrow('STR');const mage={...m,classId:'mage' as const};expect(()=>equipWeapon(mage,'sword')).not.toThrow();});
+ it('양손무기로 바꾸면 방패를 해제하고 동시 착용을 거부한다',()=>{const m=equipShield(newGuild().roster[0],'wood-shield'),bow=equipWeapon(m,'bow');expect(bow.equipment.shield).toBeUndefined();expect(()=>equipShield(bow,'wood-shield')).toThrow('양손');});
+ it('체형과 종족은 능력치에 영향을 주지 않는다',()=>{const m=newGuild().roster[0];expect(statsOf({...m,race:'foxkin',appearance:{...m.appearance,bodyPreset:'broad'}})).toEqual(statsOf(m));});
+ it('직업 변경 이후에도 기존 능력치와 무기 숙련을 보존하며 새 성장만 더한다',()=>{const m=gainWeaponXp(newGuild().roster[0],'sword',100),grown=gainXp({...m,classId:'mage'},40);expect(grown.weaponProficiency).toEqual(m.weaponProficiency);expect(attributesOf(grown).STR).toBeGreaterThanOrEqual(attributesOf(m).STR);expect(attributesOf(grown).INT).toBe(attributesOf(m).INT+2.5);});
+ for(const [xp,rank] of [[0,'F'],[30,'E'],[90,'D'],[210,'C'],[450,'B'],[900,'A'],[1800,'S']] as const)it(`숙련 ${xp} XP → ${rank}`,()=>{const m=gainWeaponXp(newGuild().roster[0],'sword',xp);expect(mastery(m).rank).toBe(rank);expect(mastery(m,'bow').rank).toBe('F');});
+ it('유효한 명중만 숙련 경험치를 주고 무효 피해·대기는 주지 않는다',()=>{const b=startBattle(newGuild()),a=b.units[0],e=b.units[5];expect(b.weaponXp).toEqual({});e.shield=999;applyDamage(b,a,e,10);expect(b.weaponXp).toEqual({});e.shield=0;applyDamage(b,a,e,10);expect(b.weaponXp?.hero?.sword).toBe(3);const again=applyReward(newGuild(),{...b,status:'defeat'});expect(again.guild.roster[0].weaponProficiency?.sword).toBe(3);expect(applyReward(again.guild,again.battle).guild).toEqual(again.guild);});
+ it('무기 스킬은 D등급에 해금되며 다른 무기로 바꾸면 발동하지 않는다',()=>{let m=gainWeaponXp(newGuild().roster[0],'sword',90);let u=createCombatant(m,0,{x:138,y:178});expect(u.skillIds).toContain('weaponStrike');const b=startBattle(newGuild());b.units[5].x=150;b.units[5].y=178;b.units[5].threat=4;u={...u,skillCooldowns:{},skillIds:['weaponShot']};expect(chooseAutoSkill(u,{...b,units:[u,b.units[5]]})).toBeUndefined();m=equipWeapon(m,'bow');expect(createCombatant(m,0,{x:55,y:178}).skillIds).not.toContain('weaponShot');});
+ it('강화·약화는 실제 피해와 방어에 영향을 주고 만료된다',()=>{const b=startBattle(newGuild()),a=b.units[0],e=b.units[5];useAutomaticSkill(b,a,a,'rally');expect(a.statuses?.[0].id).toBe('guard');useAutomaticSkill(b,a,e,'hex');expect(e.statuses?.[0].id).toBe('weaken');b.elapsed=5;const next=stepBattle(b);expect(next.units[0].statuses).toEqual([]);expect(next.units[5].statuses).toEqual([]);});
+});
+describe('외형과 저장 호환',()=>{
+ it('8직업 남녀에 실제 다른 본체 36종을 제공한다',()=>{expect(BATTLE_PRESETS).toHaveLength(36);expect(new Set(BATTLE_PRESETS.map(p=>p.file)).size).toBe(36);for(const job of new Set(BATTLE_PRESETS.map(p=>p.classId)))for(const gender of ['male','female'])expect(BATTLE_PRESETS.filter(p=>p.classId===job&&p.gender===gender).length).toBeGreaterThanOrEqual(2);});
+ it('모집 후보는 보유·현재 후보와 프리셋 중복을 억제하고 시드가 재현된다',()=>{const g=newGuild(),c=candidatesFor(7,g),owned=new Set(g.roster.map(m=>presetFor(m)?.id));expect(c).toEqual(candidatesFor(7,g));expect(new Set(c.map(m=>presetFor(m)?.id)).size).toBe(6);expect(c.every(m=>!owned.has(presetFor(m)?.id))).toBe(true);});
+ it('프리셋 풀이 소진되어도 모집은 실패하지 않는다',()=>{const g=newGuild();g.recentPresetIds=BATTLE_PRESETS.map(p=>p.id);expect(candidatesFor(1,g)).toHaveLength(6);});
+ it('실제 v1 저장을 초기화하지 않고 v2로 읽는다',()=>{const raw=structuredClone(legacy),g=decodeSave(raw);expect(g.gold).toBe(432);expect(g.victories).toBe(7);expect(g.party).toEqual(['hero','ria']);raw.state.roster.forEach((old,i)=>{const m=g.roster[i];expect(m.id).toBe(old.id);expect(m.level).toBe(old.level);expect(m.xp).toBe(old.xp);expect(m.equipment).toEqual(old.equipment);expect(m.appearanceSeed).toBe(old.appearanceSeed);expect(m.coreStats).toBeDefined();});expect(raw).toEqual(legacy);expect(decodeSave(encodeSave(g))).toEqual(g);});
+ it('중복 슬롯·없는 참조와 양손방패 저장을 거부한다',()=>{const g=newGuild();g.formation={slots:{F1:'hero',F2:'hero'}};expect(()=>decodeSave(encodeSave(g))).toThrow('진형');g.formation=undefined;g.roster[0].equipment={weapon:'bow',armor:'cloth',shield:'wood-shield'};expect(()=>decodeSave(encodeSave(g))).toThrow('양손');});
+});

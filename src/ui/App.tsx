@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
-import { CLASSES, EQUIPMENT, RACES, TRAITS } from "../data/catalog";
+import {GrowthPanel,EquipmentPanel,AppearancePanel} from "./EquipmentPanel";
+import { CLASSES, RACES, TRAITS } from "../data/catalog";
 import { recruitCost, statsOf, xpNeeded, isHero } from "../domain/characters";
 import { combatParty } from "../domain/guild";
 import type { Mercenary } from "../domain/types";
@@ -368,6 +369,7 @@ function CharacterDetails({
           </span>
         </div>
       </div>
+      <AppearancePanel m={m} owned={owned} disabled={disabled}/>
       <div className="segmented" role="group" aria-label="용병 상세 종류">
         <button aria-pressed={tab === "info"} onClick={() => setTab("info")}>
           능력 정보
@@ -391,6 +393,7 @@ function CharacterDetails({
               </div>
             ))}
           </div>
+          <GrowthPanel m={m}/>
           <div className="xp-line">
             <span>성장 경험치</span>
             <b>
@@ -444,23 +447,7 @@ function CharacterDetails({
           </details>
         </>
       ) : (
-        <div className="equipment-list">
-          {(["weapon", "armor"] as const).map((slot) => (
-            <article key={slot}>
-              <span>{slot === "weapon" ? "⚔" : "♜"}</span>
-              <div>
-                <small>{slot === "weapon" ? "무기" : "방어구"}</small>
-                <b>{EQUIPMENT[m.equipment[slot]].name}</b>
-              </div>
-              <small>장착 중</small>
-            </article>
-          ))}
-          <p className="hint">
-            현재 장착 장비를 확인할 수 있습니다.
-            <br />
-            장비 획득과 교체 기능은 다음 단계에 추가됩니다.
-          </p>
-        </div>
+        <EquipmentPanel m={m} owned={owned} disabled={disabled}/>
       )}
       <button
         className={`${owned ? "secondary" : "primary"} full-width detail-action`}

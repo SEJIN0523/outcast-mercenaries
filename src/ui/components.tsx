@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import type { Mercenary } from "../domain/types";
 import { CLASSES } from "../data/catalog";
+import {battleImage} from "../render/battleArt";
 import { hasGeneratedMercenary } from "../render/generatedArt";
 import { portrait } from "../render/sprite";
 
@@ -14,7 +15,7 @@ export function Avatar({
 }) {
   return (
     <img
-      data-art-source={hasGeneratedMercenary(m) ? "generated-v1" : "procedural"}
+      data-art-source={battleImage(m)?"battle-preset":hasGeneratedMercenary(m) ? "generated-v1" : "procedural"}
       className={`avatar ${large ? "large" : ""}`}
       src={portrait(m)}
       alt={`${m.name} · ${CLASSES[m.classId].name}`}

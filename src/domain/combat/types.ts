@@ -1,3 +1,4 @@
+import type { WeaponType,SlotId } from "../types";
 import type { Unit } from "../types";
 import type { BarrierState } from "../statusEffects";
 export type AttackPriority = "threat" | "nearest" | "weakest";
@@ -12,6 +13,10 @@ export interface Point {
 }
 export interface CombatUnit extends Unit, Point, BarrierState {
   home: Point;
+  slotId?:SlotId;
+  attackMode?:"melee"|"ranged"|"magic";
+  weaponType?:WeaponType;
+  statuses?:{id:"guard"|"weaken";until:number}[];
   moveSpeed: number;
   range: number;
   radius: number;
@@ -44,6 +49,7 @@ export interface Projectile extends Point {
   speed: number;
   damage: number;
   kind: "arrow" | "magic";
+  weaponAction?:boolean;
 }
 export interface TacticalOrders {
   tactic: TacticId;
@@ -53,6 +59,7 @@ export interface TacticalOrders {
 }
 export interface CombatBattle extends TacticalOrders {
   units: CombatUnit[];
+  weaponXp?:Record<string,Partial<Record<WeaponType,number>>>;
   tick: number;
   elapsed: number;
   status: "active" | "victory" | "defeat" | "escaped";

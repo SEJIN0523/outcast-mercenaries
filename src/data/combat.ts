@@ -1,8 +1,9 @@
 import type { ClassId } from "../domain/types";
 export const FIELD = {
   width: 360,
-  height: 420,
-  exitY: 402,
+  height: 500,
+  exitY: 482,
+  exitX: 8,
   step: 0.05,
   radius: 10,
 };
@@ -25,21 +26,21 @@ export const COMBAT_PROFILES: Record<
   },
   archer: {
     role: "ranged",
-    range: 145,
+    range: 280,
     interval: 1.3,
     movement: 48,
     skills: ["aimed"],
   },
   mage: {
     role: "ranged",
-    range: 140,
+    range: 275,
     interval: 1.6,
     movement: 38,
     skills: ["burst"],
   },
   priest: {
     role: "healer",
-    range: 120,
+    range: 240,
     interval: 1.6,
     movement: 40,
     skills: ["heal"],
@@ -63,8 +64,9 @@ export const COMBAT_PROFILES: Record<
     range: 26,
     interval: 1.5,
     movement: 35,
-    skills: ["shield"],
+    skills: ["shield","rally"],
   },
+  alchemist: { role: "ranged", range: 270, interval: 1.5, movement: 40, skills: ["tonic", "bomb","hex"] },
   bard: {
     role: "healer",
     range: 125,

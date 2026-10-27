@@ -1,3 +1,4 @@
+import {PartyPlanner} from "./PartyPlanner";
 import { CLASSES, RACES } from "../data/catalog";
 import { recruitCost, isHero } from "../domain/characters";
 import { NORMAL_PARTY_LIMIT } from "../data/party";
@@ -18,6 +19,7 @@ export function HomeScreen({
 }) {
   return (
     <section className="home-screen screen" aria-label="본부 화면">
+      <a className="preview-link" href="?gallery=1">개발 미리보기 v4 · 캐릭터와 장비 갤러리 ↗</a>
       <div className="screen-heading">
         <span className="eyebrow">A NEW BEGINNING</span>
         <h1>돌아오셨군요, 단장님.</h1>
@@ -181,99 +183,7 @@ export function MercenariesScreen({
     </section>
   );
 }
-export function PartyScreen({
-  guild,
-  disabled,
-  inspect,
-  navigate,
-}: Props & { navigate: (screen: Screen) => void }) {
-  const party = combatParty(guild);
-  return (
-    <section className="screen party-screen" aria-label="편성 화면">
-      <div className="screen-heading">
-        <span className="eyebrow">YOUR COMPANIONS</span>
-        <h1>
-          출전 파티{" "}
-          <small>
-            {combatParty(guild).length} / {NORMAL_PARTY_LIMIT}
-          </small>
-        </h1>
-        <p>동료를 선택해 함께할 파티를 준비하세요.</p>
-      </div>
-      <div
-        className="party-grid"
-        style={{
-          gridTemplateColumns: `repeat(${NORMAL_PARTY_LIMIT},minmax(0,1fr))`,
-        }}
-      >
-        {Array.from({ length: NORMAL_PARTY_LIMIT }, (_, i) =>
-          party[i] ? (
-            <button
-              key={party[i].id}
-              className="party-slot filled"
-              onClick={() => inspect(party[i].id)}
-            >
-              <small>0{i + 1}</small>
-              <Avatar m={party[i]} />
-              <b>{party[i].name}</b>
-              <span>
-                {CLASSES[party[i].classId].name} · Lv.{party[i].level}
-              </span>
-            </button>
-          ) : (
-            <div key={i} className="party-slot empty">
-              <small>0{i + 1}</small>
-              <b>＋</b>
-              <span>동료를 편성하세요</span>
-            </div>
-          ),
-        )}
-      </div>
-      <div className="section-heading">
-        <h2>편성할 동료</h2>
-        <span>주인공 포함 최대 {NORMAL_PARTY_LIMIT}명</span>
-      </div>
-      <div className="party-roster">
-        {guild.roster.map((m) => (
-          <article className="party-row" key={m.id}>
-            <button
-              onClick={() => inspect(m.id)}
-              className="party-person"
-              aria-label={`${m.name} 상세 정보`}
-            >
-              <Avatar m={m} />
-              <span>
-                <b>{m.name}</b>
-                <small>
-                  {CLASSES[m.classId].name} · Lv.{m.level}
-                </small>
-              </span>
-            </button>
-            <button
-              className={`party-toggle ${combatParty(guild).some((person) => person.id === m.id) ? "enlisted" : ""}`}
-              disabled={disabled || isHero(m)}
-              onClick={() => store.toggleParty(m.id)}
-              aria-label={`${m.name} ${combatParty(guild).some((person) => person.id === m.id) ? "편성 해제" : "편성"}`}
-            >
-              {isHero(m)
-                ? "고정 출전"
-                : combatParty(guild).some((person) => person.id === m.id)
-                  ? "✓ 편성 중"
-                  : "＋ 편성"}
-            </button>
-          </article>
-        ))}
-      </div>
-      <button
-        className="primary full-width"
-        disabled={disabled}
-        onClick={() => navigate("quests")}
-      >
-        의뢰 선택하기 →
-      </button>
-    </section>
-  );
-}
+export const PartyScreen=PartyPlanner;
 export function QuestsScreen({
   guild,
   disabled,
@@ -290,6 +200,7 @@ export function QuestsScreen({
         <h1>의뢰 게시판</h1>
         <p>숲 너머에 첫 모험이 기다립니다.</p>
       </div>
+      <div className="preview-scenarios" aria-label="전투 검증 규모"><span>개발 미리보기</span>{([1,2,5] as const).map(n=><button key={n} disabled={disabled||combatParty(guild).length<n} onClick={()=>store.start(n)}>{n} 대 {n}</button>)}</div>
       <article className="quest-detail">
         <div className="quest-illustration">
           <Icon name="sword" />

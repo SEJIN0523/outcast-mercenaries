@@ -4,7 +4,7 @@ export const distance = (a: Point, b: Point) =>
   Math.hypot(a.x - b.x, a.y - b.y);
 export const living = (u: CombatUnit) => u.hp > 0 && !u.escaped;
 export const rear = (u: CombatUnit) =>
-  u.role === "ranged" || u.role === "healer";
+  u.attackMode?u.attackMode!=="melee":u.role === "ranged" || u.role === "healer";
 
 export function face(u: CombatUnit, p: Point) {
   const dx = p.x - u.x,
@@ -19,7 +19,7 @@ export function face(u: CombatUnit, p: Point) {
         : "up";
 }
 export function clampToField(u: CombatUnit) {
-  u.x = Math.max(14, Math.min(FIELD.width - 14, u.x));
+  u.x = Math.max(4, Math.min(FIELD.width - 4, u.x));
   u.y = Math.max(48, Math.min(FIELD.height - 12, u.y));
 }
 export function separateUnits(units: CombatUnit[]) {

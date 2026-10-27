@@ -10,6 +10,7 @@ export const EYE_COLORS = [
 ];
 /** Curated palettes keep each class readable instead of arbitrary RGB noise. */
 export const OUTFIT_COLORS: Record<ClassId, readonly string[]> = {
+  alchemist: ["#6faaa0", "#a57a9e", "#899963", "#738fae", "#b38c64", "#9b746e"],
   warrior: ["#b87055", "#8c6670", "#73829a", "#8d885c", "#6a8a82", "#ae9066"],
   archer: ["#7b9b65", "#9b626d", "#637e9c", "#ac945b", "#8d729b", "#609a91"],
   mage: ["#9983b5", "#6d8fae", "#af718c", "#6b9d96", "#a38d62", "#756f9d"],

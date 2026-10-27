@@ -29,7 +29,7 @@ export function GameCanvas({ battle = false }: { battle?: boolean }) {
       role="img"
       aria-label={
         battle
-          ? "전장 · 위쪽 고블린과 아래쪽 아군. 체력과 스킬은 전장 옆에 표시됩니다."
+          ? "전장 · 왼쪽 아군과 오른쪽 고블린. 체력과 자동 스킬 효과가 표시됩니다."
           : "숲속 용병단 본부와 현재 출전 파티"
       }
     />

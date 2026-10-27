@@ -1,128 +1,20 @@
-import { openDB } from "idb";
-import { z } from "zod";
-import { CLASSES, EQUIPMENT, TRAITS } from "../data/catalog";
-import type { Guild } from "../domain/types";
-import { NORMAL_PARTY_LIMIT } from "../data/party";
-const integer = (min: number, max: number) =>
-  z.number().int().min(min).max(max);
-const known = (catalog: object) =>
-  z.string().refine((s) => Object.hasOwn(catalog, s), "알 수 없는 데이터 ID");
-const mercSchema = z.object({
-  id: z.string().min(1).max(120),
-  name: z.string().min(1).max(20),
-  gender: z.enum(["male", "female"]),
-  race: z.enum(["human", "elf", "dwarf"]),
-  classId: z.enum([
-    "warrior",
-    "archer",
-    "mage",
-    "priest",
-    "rogue",
-    "lancer",
-    "guardian",
-    "bard",
-  ]),
-  level: integer(1, 50),
-  xp: integer(0, 1999),
-  talent: integer(1, 5),
-  potential: integer(1, 5),
-  traitId: known(TRAITS),
-  appearanceSeed: z.string().max(120),
-  appearance: z.object({
-    hairStyle: integer(0, 3),
-    hairColor: z.string().regex(/^#[0-9a-f]{6}$/i),
-    skinColor: z.string().regex(/^#[0-9a-f]{6}$/i),
-    bodyType: integer(0, 2),
-    eyeColor: z
-      .string()
-      .regex(/^#[0-9a-f]{6}$/i)
-      .optional(),
-    outfitColor: z
-      .string()
-      .regex(/^#[0-9a-f]{6}$/i)
-      .optional(),
-    outfitStyle: integer(0, 2).optional(),
-    weaponStyle: integer(0, 2).optional(),
-  }),
-  equipment: z.object({ weapon: known(EQUIPMENT), armor: known(EQUIPMENT) }),
-  story: z.enum(["hero", "ria"]).optional(),
-});
-const guildSchema = z.object({
-  name: z.string().min(1).max(30),
-  gold: integer(0, 1_000_000_000),
-  roster: z.array(mercSchema).min(1).max(24),
-  candidates: z.array(mercSchema).max(6),
-  party: z.array(z.string()).min(1).max(NORMAL_PARTY_LIMIT),
-  recruitBatch: integer(0, 1_000_000),
-  victories: integer(0, 1_000_000),
-});
-const saveSchema = z.object({
-  version: z.literal(1),
-  savedAt: z.string().datetime(),
-  state: guildSchema,
-});
-export function encodeSave(guild: Guild) {
-  return JSON.stringify(
-    { version: 1, savedAt: new Date().toISOString(), state: guild },
-    null,
-    2,
-  );
+import {NORMAL_PARTY_LIMIT} from '../data/party';
+import {openDB} from 'idb';import {z} from 'zod';import {CLASSES,EQUIPMENT,TRAITS,RACES} from '../data/catalog';import {WEAPONS,SHIELDS} from '../data/weapons';import {BATTLE_PRESETS} from '../domain/battlePresets';import {attributesOf} from '../domain/equipment';import {combatParty} from '../domain/guild';import {formationPreset,SLOT_IDS} from '../domain/combat/formation';import type {Guild} from '../domain/types';
+const integer=(a:number,b:number)=>z.number().int().min(a).max(b),known=(catalog:object)=>z.string().refine(s=>Object.hasOwn(catalog,s),'알 수 없는 데이터 ID');const hex=z.string().regex(/^#[0-9a-f]{6}$/i);
+const attributes=z.object({STR:z.number().min(0).max(10000),DEX:z.number().min(0).max(10000),VIT:z.number().min(0).max(10000),INT:z.number().min(0).max(10000),SPI:z.number().min(0).max(10000)});
+const slotShape=Object.fromEntries(SLOT_IDS.map(id=>[id,z.string().min(1).max(120).optional()]));const formation=z.object({slots:z.object(slotShape).strict()});
+const mercSchema=z.object({id:z.string().min(1).max(120),name:z.string().min(1).max(20),gender:z.enum(['male','female']),race:known(RACES),classId:known(CLASSES),level:integer(1,50),xp:integer(0,1999),talent:integer(1,5),potential:integer(1,5),traitId:known(TRAITS),appearanceSeed:z.string().max(120),appearance:z.object({hairStyle:integer(0,3),hairColor:hex,skinColor:hex,bodyType:integer(0,2),bodyPreset:z.enum(['petite','slim','standard','curvy','broad']).optional(),facePreset:z.string().max(80).optional(),hairPreset:z.string().max(80).optional(),advancementTier:integer(1,3).optional(),eyeColor:hex.optional(),outfitColor:hex.optional(),outfitStyle:integer(0,2).optional(),weaponStyle:integer(0,2).optional()}),equipment:z.object({weapon:known(WEAPONS),armor:known(EQUIPMENT),shield:known(SHIELDS).optional()}),coreStats:attributes.optional(),weaponProficiency:z.partialRecord(z.enum(['sword','greatsword','dagger','axe','spear','bow','staff','club']),integer(0,1e6)).optional(),story:z.enum(['hero','ria']).optional(),battlePresetId:z.string().max(80).optional()});
+const guildSchema=z.object({name:z.string().min(1).max(30),gold:integer(0,1e9),roster:z.array(mercSchema).min(1).max(24),candidates:z.array(mercSchema).max(6),party:z.array(z.string()).min(1).max(NORMAL_PARTY_LIMIT),recruitBatch:integer(0,1e6),victories:integer(0,1e6),formation:formation.optional(),formationPresets:z.array(z.object({id:z.string().max(80),name:z.string().min(1).max(24),formation})).max(8).optional(),recentPresetIds:z.array(z.string().max(80)).max(32).optional()});
+export const SAVE_VERSION=2;
+export function migrateV1(state:Guild):Guild{if(!state||!Array.isArray(state.roster)||!Array.isArray(state.candidates)||!Array.isArray(state.party))throw Error('세이브 형식이 올바르지 않습니다.');const g=structuredClone(state);for(const m of [...g.roster,...g.candidates]){if(!CLASSES[m.classId]||!m.appearance)throw Error('세이브 데이터가 손상되었습니다.');m.coreStats??=attributesOf(m);m.weaponProficiency??={};m.appearance.bodyPreset??=m.appearance.bodyType===1?'slim':m.appearance.bodyType===2?(m.gender==='female'?'curvy':'broad'):'standard';m.appearance.facePreset??='face-v1';m.appearance.hairPreset??='hair-'+m.appearance.hairStyle;m.appearance.advancementTier??=1;}
+ if(g.party.length<1||g.party.length>NORMAL_PARTY_LIMIT||new Set(g.party).size!==g.party.length||g.party.some(id=>!g.roster.some(m=>m.id===id)))throw Error('세이브의 파티 참조가 올바르지 않습니다.');g.party=combatParty(g).map(m=>m.id);const old=g.formation as unknown as {front?:string[];rear?:string[];slots?:unknown}|undefined;
+ if(old&&!old.slots){g.formation={slots:{}};old.front?.forEach((id,i)=>{g.formation!.slots[`F${i+1}` as 'F1']=id;});old.rear?.forEach((id,i)=>{g.formation!.slots[`B${i+1}` as 'B1']=id;});}g.formation??=formationPreset(g,'balanced');g.recentPresetIds??=[];return g;
 }
-export function decodeSave(raw: unknown): Guild {
-  const input = typeof raw === "string" ? JSON.parse(raw) : raw;
-  if (input?.version !== 1)
-    throw Error("지원하지 않는 세이브 버전입니다. 원본 파일을 보관해 주세요.");
-  const parsed = saveSchema.safeParse(input);
-  if (!parsed.success)
-    throw Error("세이브 데이터가 손상되었거나 형식이 올바르지 않습니다.");
-  const g = parsed.data.state;
-  const ids = [...g.roster, ...g.candidates].map((m) => m.id);
-  if (
-    new Set(ids).size !== ids.length ||
-    new Set(g.party).size !== g.party.length ||
-    g.party.some((id) => !g.roster.some((m) => m.id === id))
-  )
-    throw Error("세이브의 용병 또는 파티 참조가 올바르지 않습니다.");
-  if (
-    [...g.roster, ...g.candidates].some(
-      (m) =>
-        !CLASSES[m.classId] ||
-        (m.level < 50 && m.xp >= m.level * 40) ||
-        (m.level === 50 && m.xp !== 0),
-    )
-  )
-    throw Error("세이브의 성장 정보가 올바르지 않습니다.");
-  return g;
-}
-const database = () =>
-  openDB("outcast-guild", 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains("saves")) db.createObjectStore("saves");
-    },
-  });
-let queue: Promise<void> = Promise.resolve();
-export function writeSave(guild: Guild) {
-  const raw = encodeSave(guild);
-  decodeSave(raw);
-  const write = async () => {
-    const db = await database();
-    try {
-      await db.put("saves", raw, "main");
-    } finally {
-      db.close();
-    }
-  };
-  const next = queue.catch(() => {}).then(write);
-  queue = next;
-  return next;
-}
-export async function readSave(): Promise<Guild | null> {
-  await queue.catch(() => {});
-  const db = await database();
-  try {
-    const raw = await db.get("saves", "main");
-    return raw === undefined ? null : decodeSave(raw);
-  } finally {
-    db.close();
-  }
-}
+export function encodeSave(guild:Guild){return JSON.stringify({version:SAVE_VERSION,savedAt:new Date().toISOString(),state:guild},null,2);}
+export function decodeSave(raw:unknown):Guild{const input=typeof raw==='string'?JSON.parse(raw):raw as {version?:number;savedAt?:string;state?:Guild};if(!input||![1,2].includes(input.version??0))throw Error('지원하지 않는 세이브 버전입니다. 원본 파일을 보관해 주세요.');if(!z.string().datetime().safeParse(input.savedAt).success)throw Error('세이브 저장 시각 형식이 올바르지 않습니다.');const state=input.version===1?migrateV1(input.state):input.state;const parsed=guildSchema.safeParse(state);if(!parsed.success)throw Error('세이브 형식 오류: '+parsed.error.issues.slice(0,3).map(i=>i.path.join('.')+':'+i.message).join('; '));const g=parsed.data as unknown as Guild;const ids=[...g.roster,...g.candidates].map(m=>m.id);if(new Set(ids).size!==ids.length||new Set(g.party).size!==g.party.length||g.party.some(id=>!g.roster.some(m=>m.id===id)))throw Error('세이브의 용병 또는 파티 참조가 올바르지 않습니다.');
+ for(const m of [...g.roster,...g.candidates]){if(m.level<50&&m.xp>=m.level*40||m.level===50&&m.xp!==0)throw Error('세이브의 성장 정보가 올바르지 않습니다.');if(m.battlePresetId&&!BATTLE_PRESETS.some(p=>p.id===m.battlePresetId&&p.classId===m.classId&&p.gender===m.gender))throw Error('세이브의 전투 프리셋이 올바르지 않습니다.');if(m.equipment.shield&&WEAPONS[m.equipment.weapon].twoHanded)throw Error('양손무기와 방패를 동시에 장착한 세이브입니다.');}
+ const hero=g.roster.find(m=>m.story==='hero'||m.id==='hero');if(hero&&!g.party.includes(hero.id))throw Error('주인공은 실제 전투에 출전해야 합니다.');
+ const check=(f:Guild['formation'],active:boolean)=>{if(!f)return;const placed=Object.values(f.slots).filter((id):id is string=>!!id);if(placed.length>NORMAL_PARTY_LIMIT||!placed.length||new Set(placed).size!==placed.length||placed.some(id=>!g.roster.some(m=>m.id===id))||hero&&!placed.includes(hero.id)||active&&(placed.length!==g.party.length||placed.some(id=>!g.party.includes(id))))throw Error('세이브의 자유 진형 참조가 올바르지 않습니다.');};check(g.formation,true);g.formationPresets?.forEach(p=>check(p.formation,false));return g;}
+const database=()=>openDB('outcast-guild',1,{upgrade(db){if(!db.objectStoreNames.contains('saves'))db.createObjectStore('saves');}});let queue:Promise<void>=Promise.resolve();
+export function writeSave(guild:Guild){const raw=encodeSave(guild);decodeSave(raw);const write=async()=>{const db=await database();try{await db.put('saves',raw,'main');}finally{db.close();}};const next=queue.catch(()=>{}).then(write);queue=next;return next;}
+export async function readSave():Promise<Guild|null>{await queue.catch(()=>{});const db=await database();try{const raw=await db.get('saves','main');return raw===undefined?null:decodeSave(raw);}finally{db.close();}}

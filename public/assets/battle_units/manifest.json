@@ -1,0 +1,1589 @@
+{
+  "version": 1,
+  "presets": [
+    {
+      "id": "warrior_f_01",
+      "job": "warrior",
+      "classId": "warrior",
+      "label": "전사",
+      "gender": "female",
+      "name": "전사 새벽",
+      "bodyType": "petite",
+      "bodyAssetId": "warrior_f_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 201,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 116,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/warrior/warrior_f_01.png",
+      "weapon": "sword",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/warrior.png",
+        "slot": 0,
+        "bounds": {
+          "left": 440,
+          "top": 41,
+          "right": 696,
+          "bottom": 509
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "warrior_f_02",
+      "job": "warrior",
+      "classId": "warrior",
+      "label": "전사",
+      "gender": "female",
+      "name": "전사 월영",
+      "bodyType": "curvy",
+      "bodyAssetId": "warrior_f_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 196,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 107,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/warrior/warrior_f_02.png",
+      "weapon": "sword",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/warrior.png",
+        "slot": 1,
+        "bounds": {
+          "left": 864,
+          "top": 16,
+          "right": 1150,
+          "bottom": 511
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "warrior_m_01",
+      "job": "warrior",
+      "classId": "warrior",
+      "label": "전사",
+      "gender": "male",
+      "name": "전사 길잡이",
+      "bodyType": "slim",
+      "bodyAssetId": "warrior_m_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 205,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 116,
+        "y": 183
+      },
+      "race": "human",
+      "file": "assets/battle_units/warrior/warrior_m_01.png",
+      "weapon": "sword",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/warrior.png",
+        "slot": 2,
+        "bounds": {
+          "left": 436,
+          "top": 514,
+          "right": 718,
+          "bottom": 1000
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "warrior_m_02",
+      "job": "warrior",
+      "classId": "warrior",
+      "label": "전사",
+      "gender": "male",
+      "name": "전사 황혼",
+      "bodyType": "broad",
+      "bodyAssetId": "warrior_m_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 213,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 110,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/warrior/warrior_m_02.png",
+      "weapon": "sword",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/warrior.png",
+        "slot": 3,
+        "bounds": {
+          "left": 856,
+          "top": 513,
+          "right": 1184,
+          "bottom": 1002
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "knight_f_01",
+      "job": "knight",
+      "classId": "guardian",
+      "label": "기사",
+      "gender": "female",
+      "name": "기사 새벽",
+      "bodyType": "slim",
+      "bodyAssetId": "knight_f_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 197,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 117,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/knight/knight_f_01.png",
+      "weapon": "sword-shield",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/knight.png",
+        "slot": 0,
+        "bounds": {
+          "left": 425,
+          "top": 27,
+          "right": 671,
+          "bottom": 505
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "knight_f_02",
+      "job": "knight",
+      "classId": "guardian",
+      "label": "기사",
+      "gender": "female",
+      "name": "기사 월영",
+      "bodyType": "curvy",
+      "bodyAssetId": "knight_f_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 195,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 99,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/knight/knight_f_02.png",
+      "weapon": "sword-shield",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/knight.png",
+        "slot": 1,
+        "bounds": {
+          "left": 851,
+          "top": 15,
+          "right": 1156,
+          "bottom": 505
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "knight_m_01",
+      "job": "knight",
+      "classId": "guardian",
+      "label": "기사",
+      "gender": "male",
+      "name": "기사 길잡이",
+      "bodyType": "standard",
+      "bodyAssetId": "knight_m_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 200,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 117,
+        "y": 183
+      },
+      "race": "human",
+      "file": "assets/battle_units/knight/knight_m_01.png",
+      "weapon": "sword-shield",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/knight.png",
+        "slot": 2,
+        "bounds": {
+          "left": 415,
+          "top": 507,
+          "right": 682,
+          "bottom": 1007
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "knight_m_02",
+      "job": "knight",
+      "classId": "guardian",
+      "label": "기사",
+      "gender": "male",
+      "name": "기사 황혼",
+      "bodyType": "broad",
+      "bodyAssetId": "knight_m_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 208,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 116,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/knight/knight_m_02.png",
+      "weapon": "sword-shield",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/knight.png",
+        "slot": 3,
+        "bounds": {
+          "left": 874,
+          "top": 502,
+          "right": 1176,
+          "bottom": 1007
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "archer_f_01",
+      "job": "archer",
+      "classId": "archer",
+      "label": "궁수",
+      "gender": "female",
+      "name": "궁수 새벽",
+      "bodyType": "petite",
+      "bodyAssetId": "archer_f_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 200,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 112,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/archer/archer_f_01.png",
+      "weapon": "bow",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/archer-female.png",
+        "slot": 0,
+        "bounds": {
+          "left": 394,
+          "top": 38,
+          "right": 661,
+          "bottom": 509
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "archer_f_02",
+      "job": "archer",
+      "classId": "archer",
+      "label": "궁수",
+      "gender": "female",
+      "name": "궁수 월영",
+      "bodyType": "slim",
+      "bodyAssetId": "archer_f_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 195,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 109,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/archer/archer_f_02.png",
+      "weapon": "bow",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/archer-female.png",
+        "slot": 1,
+        "bounds": {
+          "left": 880,
+          "top": 20,
+          "right": 1150,
+          "bottom": 510
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "archer_f_03",
+      "job": "archer",
+      "classId": "archer",
+      "label": "궁수",
+      "gender": "female",
+      "name": "궁수 길잡이",
+      "bodyType": "standard",
+      "bodyAssetId": "archer_f_03",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 198,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 105,
+        "y": 183
+      },
+      "race": "human",
+      "file": "assets/battle_units/archer/archer_f_03.png",
+      "weapon": "bow",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/archer-female.png",
+        "slot": 2,
+        "bounds": {
+          "left": 378,
+          "top": 528,
+          "right": 669,
+          "bottom": 1011
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "archer_f_04",
+      "job": "archer",
+      "classId": "archer",
+      "label": "궁수",
+      "gender": "female",
+      "name": "궁수 황혼",
+      "bodyType": "curvy",
+      "bodyAssetId": "archer_f_04",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 200,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 102,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/archer/archer_f_04.png",
+      "weapon": "bow",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/archer-female.png",
+        "slot": 3,
+        "bounds": {
+          "left": 849,
+          "top": 515,
+          "right": 1165,
+          "bottom": 1011
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "archer_m_01",
+      "job": "archer",
+      "classId": "archer",
+      "label": "궁수",
+      "gender": "male",
+      "name": "궁수 새벽",
+      "bodyType": "slim",
+      "bodyAssetId": "archer_m_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 198,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 104,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/archer/archer_m_01.png",
+      "weapon": "bow",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/archer-male.png",
+        "slot": 0,
+        "bounds": {
+          "left": 364,
+          "top": 18,
+          "right": 658,
+          "bottom": 501
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "archer_m_02",
+      "job": "archer",
+      "classId": "archer",
+      "label": "궁수",
+      "gender": "male",
+      "name": "궁수 월영",
+      "bodyType": "standard",
+      "bodyAssetId": "archer_m_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 203,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 108,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/archer/archer_m_02.png",
+      "weapon": "bow",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/archer-male.png",
+        "slot": 1,
+        "bounds": {
+          "left": 886,
+          "top": 18,
+          "right": 1183,
+          "bottom": 501
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "archer_m_03",
+      "job": "archer",
+      "classId": "archer",
+      "label": "궁수",
+      "gender": "male",
+      "name": "궁수 길잡이",
+      "bodyType": "broad",
+      "bodyAssetId": "archer_m_03",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 210,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 103,
+        "y": 183
+      },
+      "race": "human",
+      "file": "assets/battle_units/archer/archer_m_03.png",
+      "weapon": "bow",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/archer-male.png",
+        "slot": 2,
+        "bounds": {
+          "left": 352,
+          "top": 505,
+          "right": 701,
+          "bottom": 1009
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "archer_m_04",
+      "job": "archer",
+      "classId": "archer",
+      "label": "궁수",
+      "gender": "male",
+      "name": "궁수 황혼",
+      "bodyType": "standard",
+      "bodyAssetId": "archer_m_04",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 202,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 105,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/archer/archer_m_04.png",
+      "weapon": "bow",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/archer-male.png",
+        "slot": 3,
+        "bounds": {
+          "left": 893,
+          "top": 504,
+          "right": 1211,
+          "bottom": 1009
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "mage_f_01",
+      "job": "mage",
+      "classId": "mage",
+      "label": "마법사",
+      "gender": "female",
+      "name": "마법사 새벽",
+      "bodyType": "slim",
+      "bodyAssetId": "mage_f_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 198,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 113,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/mage/mage_f_01.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/mage.png",
+        "slot": 0,
+        "bounds": {
+          "left": 417,
+          "top": 11,
+          "right": 690,
+          "bottom": 512
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "mage_f_02",
+      "job": "mage",
+      "classId": "mage",
+      "label": "마법사",
+      "gender": "female",
+      "name": "마법사 월영",
+      "bodyType": "curvy",
+      "bodyAssetId": "mage_f_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 195,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 98,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/mage/mage_f_02.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/mage.png",
+        "slot": 1,
+        "bounds": {
+          "left": 901,
+          "top": 24,
+          "right": 1207,
+          "bottom": 512
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "mage_m_01",
+      "job": "mage",
+      "classId": "mage",
+      "label": "마법사",
+      "gender": "male",
+      "name": "마법사 길잡이",
+      "bodyType": "standard",
+      "bodyAssetId": "mage_m_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 205,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 115,
+        "y": 183
+      },
+      "race": "human",
+      "file": "assets/battle_units/mage/mage_m_01.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/mage.png",
+        "slot": 2,
+        "bounds": {
+          "left": 413,
+          "top": 518,
+          "right": 697,
+          "bottom": 1008
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "mage_m_02",
+      "job": "mage",
+      "classId": "mage",
+      "label": "마법사",
+      "gender": "male",
+      "name": "마법사 황혼",
+      "bodyType": "broad",
+      "bodyAssetId": "mage_m_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 209,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 114,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/mage/mage_m_02.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/mage.png",
+        "slot": 3,
+        "bounds": {
+          "left": 931,
+          "top": 513,
+          "right": 1237,
+          "bottom": 1008
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "priest_f_01",
+      "job": "priest",
+      "classId": "priest",
+      "label": "사제",
+      "gender": "female",
+      "name": "사제 새벽",
+      "bodyType": "slim",
+      "bodyAssetId": "priest_f_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 200,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 112,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/priest/priest_f_01.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/priest.png",
+        "slot": 0,
+        "bounds": {
+          "left": 400,
+          "top": 28,
+          "right": 670,
+          "bottom": 504
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "priest_f_02",
+      "job": "priest",
+      "classId": "priest",
+      "label": "사제",
+      "gender": "female",
+      "name": "사제 월영",
+      "bodyType": "curvy",
+      "bodyAssetId": "priest_f_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 199,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 106,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/priest/priest_f_02.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/priest.png",
+        "slot": 1,
+        "bounds": {
+          "left": 868,
+          "top": 9,
+          "right": 1168,
+          "bottom": 507
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "priest_m_01",
+      "job": "priest",
+      "classId": "priest",
+      "label": "사제",
+      "gender": "male",
+      "name": "사제 길잡이",
+      "bodyType": "standard",
+      "bodyAssetId": "priest_m_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 196,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 110,
+        "y": 183
+      },
+      "race": "human",
+      "file": "assets/battle_units/priest/priest_m_01.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/priest.png",
+        "slot": 2,
+        "bounds": {
+          "left": 396,
+          "top": 514,
+          "right": 670,
+          "bottom": 1009
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "priest_m_02",
+      "job": "priest",
+      "classId": "priest",
+      "label": "사제",
+      "gender": "male",
+      "name": "사제 황혼",
+      "bodyType": "broad",
+      "bodyAssetId": "priest_m_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 204,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 110,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/priest/priest_m_02.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/priest.png",
+        "slot": 3,
+        "bounds": {
+          "left": 874,
+          "top": 503,
+          "right": 1182,
+          "bottom": 1009
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "thief_f_01",
+      "job": "thief",
+      "classId": "rogue",
+      "label": "도적",
+      "gender": "female",
+      "name": "도적 새벽",
+      "bodyType": "slim",
+      "bodyAssetId": "thief_f_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 197,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 114,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/thief/thief_f_01.png",
+      "weapon": "dagger",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/thief.png",
+        "slot": 0,
+        "bounds": {
+          "left": 415,
+          "top": 31,
+          "right": 674,
+          "bottom": 517
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "thief_f_02",
+      "job": "thief",
+      "classId": "rogue",
+      "label": "도적",
+      "gender": "female",
+      "name": "도적 월영",
+      "bodyType": "curvy",
+      "bodyAssetId": "thief_f_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 191,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 99,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/thief/thief_f_02.png",
+      "weapon": "dagger",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/thief.png",
+        "slot": 1,
+        "bounds": {
+          "left": 886,
+          "top": 16,
+          "right": 1185,
+          "bottom": 517
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "thief_m_01",
+      "job": "thief",
+      "classId": "rogue",
+      "label": "도적",
+      "gender": "male",
+      "name": "도적 길잡이",
+      "bodyType": "standard",
+      "bodyAssetId": "thief_m_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 204,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 116,
+        "y": 183
+      },
+      "race": "human",
+      "file": "assets/battle_units/thief/thief_m_01.png",
+      "weapon": "dagger",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/thief.png",
+        "slot": 2,
+        "bounds": {
+          "left": 415,
+          "top": 516,
+          "right": 695,
+          "bottom": 1009
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "thief_m_02",
+      "job": "thief",
+      "classId": "rogue",
+      "label": "도적",
+      "gender": "male",
+      "name": "도적 황혼",
+      "bodyType": "broad",
+      "bodyAssetId": "thief_m_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 209,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 116,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/thief/thief_m_02.png",
+      "weapon": "dagger",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/thief.png",
+        "slot": 3,
+        "bounds": {
+          "left": 922,
+          "top": 513,
+          "right": 1220,
+          "bottom": 1009
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "lancer_f_01",
+      "job": "lancer",
+      "classId": "lancer",
+      "label": "창병",
+      "gender": "female",
+      "name": "창병 새벽",
+      "bodyType": "slim",
+      "bodyAssetId": "lancer_f_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 203,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 117,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/lancer/lancer_f_01.png",
+      "weapon": "spear",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/lancer.png",
+        "slot": 0,
+        "bounds": {
+          "left": 412,
+          "top": 28,
+          "right": 681,
+          "bottom": 509
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "lancer_f_02",
+      "job": "lancer",
+      "classId": "lancer",
+      "label": "창병",
+      "gender": "female",
+      "name": "창병 월영",
+      "bodyType": "curvy",
+      "bodyAssetId": "lancer_f_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 197,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 100,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/lancer/lancer_f_02.png",
+      "weapon": "spear",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/lancer.png",
+        "slot": 1,
+        "bounds": {
+          "left": 860,
+          "top": 13,
+          "right": 1172,
+          "bottom": 509
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "lancer_m_01",
+      "job": "lancer",
+      "classId": "lancer",
+      "label": "창병",
+      "gender": "male",
+      "name": "창병 길잡이",
+      "bodyType": "standard",
+      "bodyAssetId": "lancer_m_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 207,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 117,
+        "y": 183
+      },
+      "race": "human",
+      "file": "assets/battle_units/lancer/lancer_m_01.png",
+      "weapon": "spear",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/lancer.png",
+        "slot": 2,
+        "bounds": {
+          "left": 405,
+          "top": 515,
+          "right": 689,
+          "bottom": 1007
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "lancer_m_02",
+      "job": "lancer",
+      "classId": "lancer",
+      "label": "창병",
+      "gender": "male",
+      "name": "창병 황혼",
+      "bodyType": "broad",
+      "bodyAssetId": "lancer_m_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 208,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 112,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/lancer/lancer_m_02.png",
+      "weapon": "spear",
+      "row": "front",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/lancer.png",
+        "slot": 3,
+        "bounds": {
+          "left": 877,
+          "top": 510,
+          "right": 1186,
+          "bottom": 1007
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "alchemist_f_01",
+      "job": "alchemist",
+      "classId": "alchemist",
+      "label": "연금술사",
+      "gender": "female",
+      "name": "연금술사 새벽",
+      "bodyType": "slim",
+      "bodyAssetId": "alchemist_f_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 201,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 111,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/alchemist/alchemist_f_01.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/alchemist.png",
+        "slot": 0,
+        "bounds": {
+          "left": 414,
+          "top": 46,
+          "right": 684,
+          "bottom": 512
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "alchemist_f_02",
+      "job": "alchemist",
+      "classId": "alchemist",
+      "label": "연금술사",
+      "gender": "female",
+      "name": "연금술사 월영",
+      "bodyType": "curvy",
+      "bodyAssetId": "alchemist_f_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 201,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 101,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/alchemist/alchemist_f_02.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/alchemist.png",
+        "slot": 1,
+        "bounds": {
+          "left": 857,
+          "top": 24,
+          "right": 1175,
+          "bottom": 512
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "alchemist_m_01",
+      "job": "alchemist",
+      "classId": "alchemist",
+      "label": "연금술사",
+      "gender": "male",
+      "name": "연금술사 길잡이",
+      "bodyType": "standard",
+      "bodyAssetId": "alchemist_m_01",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 207,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 117,
+        "y": 183
+      },
+      "race": "human",
+      "file": "assets/battle_units/alchemist/alchemist_m_01.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/alchemist.png",
+        "slot": 2,
+        "bounds": {
+          "left": 410,
+          "top": 519,
+          "right": 692,
+          "bottom": 1005
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    },
+    {
+      "id": "alchemist_m_02",
+      "job": "alchemist",
+      "classId": "alchemist",
+      "label": "연금술사",
+      "gender": "male",
+      "name": "연금술사 황혼",
+      "bodyType": "broad",
+      "bodyAssetId": "alchemist_m_02",
+      "advancementTier": 1,
+      "weaponSocket": {
+        "x": 207,
+        "y": 183
+      },
+      "shieldSocket": {
+        "x": 108,
+        "y": 183
+      },
+      "race": "elf",
+      "file": "assets/battle_units/alchemist/alchemist_m_02.png",
+      "weapon": "staff",
+      "row": "rear",
+      "facing": "right",
+      "renderHeight": 92,
+      "resolution": {
+        "width": 256,
+        "height": 320
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.95625
+      },
+      "source": {
+        "file": "docs/art/v4-body-sources/alchemist.png",
+        "slot": 3,
+        "bounds": {
+          "left": 879,
+          "top": 509,
+          "right": 1199,
+          "bottom": 1006
+        }
+      },
+      "style": "quarter-unarmed-v4"
+    }
+  ]
+}

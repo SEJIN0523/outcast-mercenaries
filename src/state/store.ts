@@ -1,4 +1,8 @@
-import { newGuild, recruit, toggleParty, candidatesFor } from "../domain/guild";
+import {setFormationRow,placeCharacter,formationPreset,saveFormation,loadFormation} from "../domain/combat/formation";
+import type {FormationMode} from "../domain/combat/formation";
+import {equipWeapon,equipShield} from "../domain/equipment";
+import {selectPreset} from "../domain/battlePresets";
+import { newGuild, recruit, toggleParty, candidatesFor,combatParty } from "../domain/guild";
 import {
   applyReward,
   startBattle,
@@ -8,7 +12,7 @@ import {
   requestEscape,
 } from "../domain/battle";
 import { decodeSave, readSave, writeSave } from "../persistence/save";
-import type { Guild } from "../domain/types";
+import type { Guild,SlotId,Race } from "../domain/types";
 import type { CombatBattle as Battle, TacticId } from "../domain/combat/types";
 export interface Snapshot {
   guild: Guild;
@@ -140,16 +144,25 @@ export const store = {
         {
           ...state.guild,
           recruitBatch: batch,
-          candidates: candidatesFor(batch),
+          candidates: candidatesFor(batch,state.guild),
+          recentPresetIds:[...(state.guild.recentPresetIds??[]),...state.guild.candidates.map(m=>m.battlePresetId??'')].filter(Boolean).slice(-32),
         },
         "새로운 지원자들이 모집소를 찾았습니다.",
       );
     }),
-  start: () =>
+  setRow:(id:string,row:"front"|"rear")=>action(()=>{unlocked();updateGuild(setFormationRow(state.guild,id,row),"전열·후열 배치를 변경했습니다.");}),
+  place:(slot:SlotId,id:string)=>action(()=>{unlocked();updateGuild(placeCharacter(state.guild,slot,id),"진형 배치를 저장했습니다.");}),
+  formation:(mode:FormationMode)=>action(()=>{unlocked();updateGuild({...state.guild,formation:formationPreset(state.guild,mode)},"진형 프리셋을 적용했습니다.");}),
+  saveFormation:(name:string)=>action(()=>{unlocked();updateGuild(saveFormation(state.guild,name),"현재 진형을 저장했습니다.");}),
+  loadFormation:(id:string)=>action(()=>{unlocked();updateGuild(loadFormation(state.guild,id),"저장한 진형을 불러왔습니다.");}),
+  equip:(id:string,slot:'weapon'|'shield',item:string)=>action(()=>{unlocked();const m=state.guild.roster.find(m=>m.id===id);if(!m)throw Error('소속 용병만 장비를 변경할 수 있습니다.');const changed=slot==='weapon'?equipWeapon(m,item):equipShield(m,item||undefined);updateGuild({...state.guild,roster:state.guild.roster.map(m=>m.id===id?changed:m)},"장비를 변경했습니다.");}),
+  race:(id:string,race:Race)=>action(()=>{unlocked();updateGuild({...state.guild,roster:state.guild.roster.map(m=>m.id===id?{...m,race}:m)},"종족 외형을 저장했습니다. 능력치는 그대로입니다.");}),
+  setPreset:(id:string,presetId:string)=>action(()=>{unlocked();const m=state.guild.roster.find(m=>m.id===id);if(!m)throw Error("소속 용병만 변경할 수 있습니다.");const changed=selectPreset(m,presetId);updateGuild({...state.guild,roster:state.guild.roster.map(m=>m.id===id?changed:m)},"전투 프리셋을 저장했습니다.");}),
+  start: (count?:1|2|5) =>
     action(() => {
       unlocked();
       emit({
-        battle: startBattle(state.guild),
+        battle: count?startBattle({...state.guild,party:combatParty(state.guild).slice(0,count).map(m=>m.id),formation:undefined},{enemyCount:count}):startBattle(state.guild),
         paused: false,
         notice:
           "주인공과 동료의 자율전투 시작. 전술·우선순위·도주를 지휘하세요.",

@@ -62,14 +62,14 @@ for (const size of [
         page.getByRole("button", { name: "주인공은 일반 전투에 고정 출전" }),
       ).toBeDisabled();
       await page.getByRole("button", { name: "장비", exact: true }).click();
-      await expect(page.locator(".equipment-list article")).toHaveCount(2);
+      await expect(page.locator(".equipment-panel select")).toHaveCount(2);
       await page.getByRole("button", { name: "닫기", exact: true }).click();
       await navigate(page, "편성");
-      await expect(page.locator(".party-slot.filled")).toHaveCount(5);
+      await expect(page.locator('.formation-slot[data-character]:not([data-character=""])')).toHaveCount(5);
       await expect(page.locator(".party-roster")).toContainText("단장");
       await page.locator(".party-toggle").nth(1).click();
       await page.locator(".party-toggle").nth(1).click();
-      await expect(page.locator(".party-slot.filled")).toHaveCount(5);
+      await expect(page.locator('.formation-slot[data-character]:not([data-character=""])')).toHaveCount(5);
       const gold = Number(
         (await page.locator(".gold b").innerText()).replace(/,/g, ""),
       );
@@ -169,7 +169,7 @@ for (const size of [
       await page.reload();
       await expect(page.getByTestId("victories")).toHaveText("1");
       await navigate(page, "편성");
-      await expect(page.locator(".party-slot.filled")).toHaveCount(5);
+      await expect(page.locator('.formation-slot[data-character]:not([data-character=""])')).toHaveCount(5);
       await page
         .getByRole("button", { name: "단장 상세 정보", exact: true })
         .click();
@@ -215,14 +215,14 @@ test("기존 버전1 저장의 주인공·능력·장비와 2인 편성 유지",
   await expect(page.locator(".gold b")).toHaveText("432");
   await expect(page.getByTestId("victories")).toHaveText("7");
   await navigate(page, "편성");
-  await expect(page.locator(".party-slot.filled")).toHaveCount(2);
+  await expect(page.locator('.formation-slot[data-character]:not([data-character=""])')).toHaveCount(2);
   await expect(page.locator(".party-roster")).toContainText("단장");
   await navigate(page, "용병");
   await page.getByRole("button", { name: "단장 상세 정보" }).click();
   await expect(page.locator(".class-label")).toContainText("주인공");
   await expect(page.locator(".xp-line")).toContainText("15 / 80");
   await page.getByRole("button", { name: "장비", exact: true }).click();
-  await expect(page.locator(".equipment-list")).toContainText("낡은 철검");
+  await expect(page.locator(".equipment-panel")).toContainText("한손검");
   const raw = await page.evaluate(async () => {
     const db = await new Promise<IDBDatabase>((r) => {
       const q = indexedDB.open("outcast-guild", 1);

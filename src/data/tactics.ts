@@ -10,12 +10,12 @@ export const TACTICS: Record<
 > = {
   charge: {
     name: "전체 돌격",
-    description: "진형보다 접근을 우선하고 전장 끝까지 추격합니다.",
+    description: "후열도 공격 대상으로 삼고 전진한 기준점에서 돌격합니다.",
     pursuit: 500,
   },
   balanced: {
     name: "균형 전술",
-    description: "역할별 사거리와 진형을 고려해 제한적으로 추격합니다.",
+    description: "근접은 적 전열을 공격한 뒤 복귀하고 후열은 제자리에서 지원합니다.",
     pursuit: 190,
   },
   protect: {
@@ -35,7 +35,7 @@ export const TACTICS: Record<
   },
   retreat: {
     name: "전술적 후퇴",
-    description: "후방 진형으로 이동하며 사거리 안의 적만 공격합니다.",
+    description: "왼쪽 후방으로 진형을 옮기며 사거리 안의 적만 공격합니다.",
     pursuit: 45,
   },
 };
