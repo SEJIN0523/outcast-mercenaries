@@ -10,6 +10,7 @@ import type { Battle, Guild } from "../domain/types";
 export interface Snapshot {
   guild: Guild;
   battle: Battle | null;
+  paused: boolean;
   loaded: boolean;
   notice: string;
   saveStatus: string;
@@ -18,6 +19,7 @@ export interface Snapshot {
 let state: Snapshot = {
   guild: newGuild(),
   battle: null,
+  paused: false,
   loaded: false,
   notice: "왕국의 끝에서, 우리의 이야기가 시작된다.",
   saveStatus: "불러오는 중",
@@ -82,6 +84,7 @@ function resolveBattle(battle: Battle) {
   const result = applyReward(state.guild, battle);
   emit({
     ...result,
+    paused: false,
     notice:
       battle.status === "victory"
         ? "의뢰 완료! 120골드와 출전자 경험치 55를 획득했습니다."
@@ -142,18 +145,24 @@ export const store = {
       unlocked();
       emit({
         battle: startBattle(state.guild),
+        paused: false,
         notice: "고블린 토벌 시작. 집중 공격으로 동료를 지휘하세요.",
       });
     }),
   tick: () => {
-    if (state.battle?.status === "active" && !document.hidden)
+    if (state.battle?.status === "active" && !state.paused && !document.hidden)
       resolveBattle(tickBattle(state.battle));
   },
   focus: () => {
-    if (state.battle) resolveBattle(focusAttack(state.battle));
+    if (state.battle?.status === "active" && !state.paused)
+      resolveBattle(focusAttack(state.battle));
+  },
+  togglePause: () => {
+    if (state.battle?.status === "active") emit({ paused: !state.paused });
   },
   returnHome: () => {
-    if (state.battle?.status !== "active") emit({ battle: null });
+    if (state.battle?.status !== "active")
+      emit({ battle: null, paused: false });
   },
   save: () => save(true),
   async load() {

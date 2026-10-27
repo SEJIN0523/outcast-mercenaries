@@ -265,7 +265,14 @@ export class GuildScene extends Phaser.Scene {
     }
     this.refresh();
     this.unsubscribe = store.subscribe(() => this.refresh());
-    this.events.once("shutdown", () => this.unsubscribe?.());
+    const cleanup = () => {
+      this.unsubscribe?.();
+      this.unsubscribe = undefined;
+      this.events.off("shutdown", cleanup);
+      this.events.off("destroy", cleanup);
+    };
+    this.events.once("shutdown", cleanup);
+    this.events.once("destroy", cleanup);
   }
   private refresh() {
     const { guild, battle } = store.getSnapshot();

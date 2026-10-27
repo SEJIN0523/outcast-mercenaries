@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "savedAt": "2026-10-27T04:00:00.000Z",
+  "state": {
+    "name": "새벽의 여명",
+    "gold": 432,
+    "victories": 7,
+    "recruitBatch": 0,
+    "party": ["hero", "ria"],
+    "candidates": [],
+    "roster": [
+      {
+        "id": "hero",
+        "name": "단장",
+        "gender": "male",
+        "race": "human",
+        "classId": "warrior",
+        "level": 2,
+        "xp": 15,
+        "talent": 2,
+        "potential": 5,
+        "traitId": "brave",
+        "appearanceSeed": "outcast",
+        "appearance": {
+          "hairStyle": 1,
+          "hairColor": "#d5b36c",
+          "skinColor": "#bd805e",
+          "bodyType": 0
+        },
+        "equipment": { "weapon": "sword", "armor": "cloth" },
+        "story": "hero"
+      },
+      {
+        "id": "ria",
+        "name": "리아",
+        "gender": "female",
+        "race": "elf",
+        "classId": "archer",
+        "level": 2,
+        "xp": 15,
+        "talent": 3,
+        "potential": 4,
+        "traitId": "steady",
+        "appearanceSeed": "ria",
+        "appearance": {
+          "hairStyle": 2,
+          "hairColor": "#d5b36c",
+          "skinColor": "#f3cda5",
+          "bodyType": 0
+        },
+        "equipment": { "weapon": "bow", "armor": "cloth" },
+        "story": "ria"
+      }
+    ]
+  }
+}

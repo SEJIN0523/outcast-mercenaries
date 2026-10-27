@@ -20,7 +20,7 @@ DB `outcast-guild`, store `saves`, key `main`. 세이브는 `{version:1, savedAt
 
 ## PWA / 배포
 
-프로덕션 빌드에서 manifest 및 service worker 생성. 앱 쉘과 번들/아이콘을 precache한다. 첫 접속은 네트워크가 필요하다. 업데이트는 사용자 선택 후 적용한다. 설치 이벤트가 없는 환경에서는 설치 안내를 표시한다. HTTPS 또는 localhost가 필요하다. GitHub Pages 경로는 configure-pages의 PAGES_BASE_PATH 또는 GITHUB_REPOSITORY에서 계산하고 Vite와 manifest id/start_url/scope, Service Worker fallback에 공통 적용한다. PWA는 landscape 방향을 요청하며 일반 탭에서는 세로/가로 반응형 UI를 제공한다.
+프로덕션 빌드에서 manifest 및 service worker 생성. 앱 쉘과 번들/아이콘을 precache한다. 첫 접속은 네트워크가 필요하다. 업데이트는 사용자 선택 후 적용한다. 설치 이벤트가 없는 환경에서는 설치 안내를 표시한다. HTTPS 또는 localhost가 필요하다. GitHub Pages 경로는 configure-pages의 PAGES_BASE_PATH 또는 GITHUB_REPOSITORY에서 계산하고 Vite와 manifest id/start_url/scope, Service Worker fallback에 공통 적용한다. PWA는 portrait 방향을 요청한다. 일반 화면은 세로 앱의 하단 내비게이션을 사용하고, 전투는 별도 BattleScene과 DOM HP/스킬 조작으로 전체 동적 뷰포트를 사용한다. 세부 규격은 PORTRAIT_UI.md를 참고한다.
 
 ## 검증
 

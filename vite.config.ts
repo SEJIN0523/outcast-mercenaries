@@ -21,7 +21,7 @@ export default defineConfig({
         short_name: "낙오자의 용병단",
         lang: "ko",
         id: base,
-        orientation: "landscape",
+        orientation: "portrait",
         description: "당신이 발견한 가능성으로 시작하는 용병단 이야기",
         start_url: base,
         scope: base,

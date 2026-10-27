@@ -24,7 +24,7 @@ async function verify() {
   for (const url of scripts) await get(url);
   const manifestUrl = new URL("manifest.webmanifest", base);
   const manifest = await (await get(manifestUrl)).json();
-  if (manifest.display !== "standalone" || manifest.orientation !== "landscape")
+  if (manifest.display !== "standalone" || manifest.orientation !== "portrait")
     throw new Error("Invalid game PWA manifest.");
   if (new URL(manifest.start_url, manifestUrl).pathname !== base.pathname)
     throw new Error("Wrong PWA start_url base.");
