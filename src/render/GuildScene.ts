@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { store } from "../state/store";
 import { combatParty } from "../domain/guild";
 import { random } from "../domain/random";
+import { appearanceSignature } from "../domain/appearance";
 import { drawMercenary } from "./sprite";
 
 export class GuildScene extends Phaser.Scene {
@@ -279,7 +280,7 @@ export class GuildScene extends Phaser.Scene {
     const { guild, battle } = store.getSnapshot();
     const key = JSON.stringify([
       guild.party,
-      guild.roster.map((m) => [m.id, m.level]),
+      guild.roster.map((m) => [m.id, m.level, appearanceSignature(m)]),
       battle?.tick,
       battle?.elapsed,
       battle?.status,
@@ -300,7 +301,7 @@ export class GuildScene extends Phaser.Scene {
         }));
     party.forEach((unit, i) => {
       const m = unit.mercenary!;
-      const textureKey = `sprite-${m.id}`;
+      const textureKey = `sprite-${m.id}:${appearanceSignature(m)}`;
       if (!this.textures.exists(textureKey)) {
         const texture = this.textures.createCanvas(textureKey, 64, 80)!;
         drawMercenary(texture.context, m);

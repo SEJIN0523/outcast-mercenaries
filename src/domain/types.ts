@@ -20,6 +20,10 @@ export interface Appearance {
   hairColor: string;
   skinColor: string;
   bodyType: number;
+  eyeColor?: string;
+  outfitColor?: string;
+  outfitStyle?: number;
+  weaponStyle?: number;
 }
 export interface Mercenary {
   id: string;

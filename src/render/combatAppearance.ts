@@ -1,4 +1,5 @@
 import type { CombatUnit, Direction, Action } from "../domain/combat/types";
+import { appearanceSignature } from "../domain/appearance";
 import type { GoblinKind } from "./goblin";
 export interface CombatAppearance {
   textureKey: string;
@@ -18,7 +19,7 @@ export function combatAppearance(unit: CombatUnit, time = 0): CombatAppearance {
       ? "archer"
       : "fighter";
   return {
-    textureKey: `rt-${unit.mercenary ? unit.id : `goblin-${goblinKind}`}-${unit.direction}-${frame}`,
+    textureKey: `rt-${unit.mercenary ? `${unit.id}:${appearanceSignature(unit.mercenary)}` : `goblin-${goblinKind}`}-${unit.direction}-${frame}`,
     direction: unit.direction,
     action: unit.action,
     frame,

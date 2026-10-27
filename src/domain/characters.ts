@@ -1,5 +1,6 @@
 import { CLASSES, EQUIPMENT, TRAITS } from "../data/catalog";
 import { random } from "./random";
+import { generateCosmetics } from "./appearance";
 import type { ClassId, Mercenary, Stats } from "./types";
 export const isHero = (m: Mercenary) => m.story === "hero" || m.id === "hero";
 export const HAIR = [
@@ -37,6 +38,7 @@ export function generateMercenary(seed: string): Mercenary {
       hairColor: pick(HAIR),
       skinColor: pick(SKIN),
       bodyType: Math.floor(rng() * 3),
+      ...generateCosmetics(seed, classId),
     },
     equipment: { weapon: CLASSES[classId].weapon, armor: "cloth" },
   } satisfies Mercenary;

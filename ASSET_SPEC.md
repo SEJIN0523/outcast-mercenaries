@@ -35,3 +35,7 @@ shadow → hairBack → body(피부/체형) → armor → face → hair → weap
 남녀 8직업 16종×4방향×4프레임=256프레임, 고블린 전사/궁수/대장 3종×16=48프레임, 8레이어 참조, 360×420 숲 공터, 확대 비교 시트를 public/art에 제공한다. 헤어 4형과 피부/머리색·3종족·3체형은 런타임 데이터로 재현한다. 본부 배경은 기존 그림을 유지하고 새 캐릭터를 함께 사용한다.
 
 재생성은 npm run art:export, 열람은 /art/다. 실제 교체 위치·프레임 좌표·팔레트·fallback·PWA 검증과 다음 작업자에게 전달할 지시는 [ASSET_REPLACEMENT_GUIDE.md](ASSET_REPLACEMENT_GUIDE.md)에 있다. PNG 참조본만 덮어써서는 현재 게임의 드로잉 원본이 바뀌지 않는다.
+
+## 랜덤 외형 확장
+
+variation-preview.png는 실제 드로잉의 궁수 조합12종이며, archer-concept-v1.png는 승인된 생성 이미지 그림체의 6종 베리에이션 시안이다. 두 자료를 혼동하지 않는다. 눈색6종·직업별 의상색6종·복장3형·장비 종류별 무기3형을 저장 외형과 연결했다. 신규 인물은 시드로 재현하고 기존 세이브는 원본 외형을 유지한다. 자세한 필드와 이미지 교체 지시는 ASSET_REPLACEMENT_GUIDE.md를 따른다.

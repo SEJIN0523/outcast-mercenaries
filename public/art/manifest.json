@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "frame": {
     "width": 64,
     "height": 80,
@@ -297,6 +297,176 @@
       "equipment": {
         "weapon": "lute",
         "armor": "cloth"
+      }
+    }
+  ],
+  "variationRows": [
+    {
+      "gender": "male",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#584135",
+        "skinColor": "#f3cda5",
+        "bodyType": 0,
+        "eyeColor": "#7893a0",
+        "outfitColor": "#7b9b65",
+        "outfitStyle": 0,
+        "weaponStyle": 0
+      }
+    },
+    {
+      "gender": "male",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 1,
+        "hairColor": "#d5b36c",
+        "skinColor": "#dca67b",
+        "bodyType": 0,
+        "eyeColor": "#a47a4c",
+        "outfitColor": "#9b626d",
+        "outfitStyle": 1,
+        "weaponStyle": 1
+      }
+    },
+    {
+      "gender": "male",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#a34e3a",
+        "skinColor": "#bd805e",
+        "bodyType": 0,
+        "eyeColor": "#749568",
+        "outfitColor": "#637e9c",
+        "outfitStyle": 2,
+        "weaponStyle": 2
+      }
+    },
+    {
+      "gender": "male",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 3,
+        "hairColor": "#c2c9d0",
+        "skinColor": "#885b46",
+        "bodyType": 0,
+        "eyeColor": "#b39555",
+        "outfitColor": "#ac945b",
+        "outfitStyle": 0,
+        "weaponStyle": 0
+      }
+    },
+    {
+      "gender": "male",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#353241",
+        "skinColor": "#f3cda5",
+        "bodyType": 0,
+        "eyeColor": "#9a80b5",
+        "outfitColor": "#8d729b",
+        "outfitStyle": 1,
+        "weaponStyle": 1
+      }
+    },
+    {
+      "gender": "male",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 1,
+        "hairColor": "#73909a",
+        "skinColor": "#dca67b",
+        "bodyType": 0,
+        "eyeColor": "#6e626a",
+        "outfitColor": "#609a91",
+        "outfitStyle": 2,
+        "weaponStyle": 2
+      }
+    },
+    {
+      "gender": "female",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#584135",
+        "skinColor": "#f3cda5",
+        "bodyType": 0,
+        "eyeColor": "#7893a0",
+        "outfitColor": "#7b9b65",
+        "outfitStyle": 0,
+        "weaponStyle": 0
+      }
+    },
+    {
+      "gender": "female",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 1,
+        "hairColor": "#d5b36c",
+        "skinColor": "#dca67b",
+        "bodyType": 0,
+        "eyeColor": "#a47a4c",
+        "outfitColor": "#9b626d",
+        "outfitStyle": 1,
+        "weaponStyle": 1
+      }
+    },
+    {
+      "gender": "female",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 2,
+        "hairColor": "#a34e3a",
+        "skinColor": "#bd805e",
+        "bodyType": 0,
+        "eyeColor": "#749568",
+        "outfitColor": "#637e9c",
+        "outfitStyle": 2,
+        "weaponStyle": 2
+      }
+    },
+    {
+      "gender": "female",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 3,
+        "hairColor": "#c2c9d0",
+        "skinColor": "#885b46",
+        "bodyType": 0,
+        "eyeColor": "#b39555",
+        "outfitColor": "#ac945b",
+        "outfitStyle": 0,
+        "weaponStyle": 0
+      }
+    },
+    {
+      "gender": "female",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 0,
+        "hairColor": "#353241",
+        "skinColor": "#f3cda5",
+        "bodyType": 0,
+        "eyeColor": "#9a80b5",
+        "outfitColor": "#8d729b",
+        "outfitStyle": 1,
+        "weaponStyle": 1
+      }
+    },
+    {
+      "gender": "female",
+      "classId": "archer",
+      "appearance": {
+        "hairStyle": 1,
+        "hairColor": "#73909a",
+        "skinColor": "#dca67b",
+        "bodyType": 0,
+        "eyeColor": "#6e626a",
+        "outfitColor": "#609a91",
+        "outfitStyle": 2,
+        "weaponStyle": 2
       }
     }
   ],

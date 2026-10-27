@@ -33,6 +33,16 @@ const mercSchema = z.object({
     hairColor: z.string().regex(/^#[0-9a-f]{6}$/i),
     skinColor: z.string().regex(/^#[0-9a-f]{6}$/i),
     bodyType: integer(0, 2),
+    eyeColor: z
+      .string()
+      .regex(/^#[0-9a-f]{6}$/i)
+      .optional(),
+    outfitColor: z
+      .string()
+      .regex(/^#[0-9a-f]{6}$/i)
+      .optional(),
+    outfitStyle: integer(0, 2).optional(),
+    weaponStyle: integer(0, 2).optional(),
   }),
   equipment: z.object({ weapon: known(EQUIPMENT), armor: known(EQUIPMENT) }),
   story: z.enum(["hero", "ria"]).optional(),

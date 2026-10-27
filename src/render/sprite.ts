@@ -1,6 +1,8 @@
-import { CLASSES, EQUIPMENT } from "../data/catalog";
+import { EQUIPMENT } from "../data/catalog";
 import type { Mercenary } from "../domain/types";
 import type { Direction } from "../domain/combat/types";
+import { resolveCosmetics, appearanceSignature } from "../domain/appearance";
+import { drawWeaponVariant } from "./weaponVariants";
 import { pixelPainter, shade } from "./pixels";
 export const SPRITE_SPEC = {
   width: 64,
@@ -51,7 +53,8 @@ export function drawMercenary(
     light = "#f4dfa0",
     steel = "#9eafbc",
     darkSteel = "#536579";
-  const color = CLASSES[m.classId].color,
+  const cosmetics = resolveCosmetics(m.appearance, m.classId);
+  const color = cosmetics.outfitColor,
     shadow = shade(color, -35),
     shine = shade(color, 32),
     skinDark = shade(skin, -35),
@@ -157,7 +160,7 @@ export function drawMercenary(
     r(16 - wide, 50 + hy, 7, 4, shade(color, -45));
     r(42 + wide, 50 + hy, 7, 4, shade(color, -45));
     r(17 - wide, 50 + hy, 5, 1, gold);
-    if (robe) {
+    if (robe && cosmetics.outfitStyle !== 1) {
       p(
         [
           [24, 48],
@@ -189,7 +192,7 @@ export function drawMercenary(
       r(25, 55, 2, 8, shadow);
       r(38, 55, 2, 8, shadow);
     }
-    if (female && !robe) {
+    if (female && !robe && cosmetics.outfitStyle !== 1) {
       p(
         [
           [24, 51],
@@ -211,6 +214,69 @@ export function drawMercenary(
       r(23, 60, 18, 1, gold);
       r(27, 54, 2, 6, shine);
       r(36, 54, 2, 6, shadow);
+    }
+    if (cosmetics.outfitStyle === 1) {
+      // A short jacket leaves the split trousers visible, with contrasting lapels.
+      p(
+        [
+          [23, 35 + hy],
+          [28, 35 + hy],
+          [30, 46],
+          [25, 43],
+        ],
+        shine,
+      );
+      p(
+        [
+          [36, 35 + hy],
+          [40, 36 + hy],
+          [38, 45],
+          [34, 43],
+        ],
+        shadow,
+      );
+      r(24, 48, 5, 3, "#685447");
+      r(35, 48, 5, 3, "#685447");
+    } else if (cosmetics.outfitStyle === 2) {
+      // Long split coat: two distinct tails, preserved gap and visible boots.
+      p(
+        [
+          [23, 48],
+          [30, 49],
+          [28, 68],
+          [18, 66],
+        ],
+        ink,
+      );
+      p(
+        [
+          [24, 50],
+          [28, 51],
+          [26, 66],
+          [21, 64],
+        ],
+        color,
+      );
+      p(
+        [
+          [35, 49],
+          [41, 48],
+          [46, 66],
+          [36, 68],
+        ],
+        ink,
+      );
+      p(
+        [
+          [37, 51],
+          [40, 50],
+          [43, 64],
+          [38, 66],
+        ],
+        shadow,
+      );
+      r(22, 63, 4, 1, gold);
+      r(39, 63, 3, 1, gold);
     }
     r(22 - wide, 52, 20 + wide * 2, 3, "#654533");
     r(29, 52, 6, 4, gold);
@@ -351,14 +417,15 @@ export function drawMercenary(
     if (!back) {
       if (side) {
         r(37, 22 + hy, 4, 4, ink);
+        if (m.appearance.eyeColor) r(38, 23 + hy, 2, 2, cosmetics.eyeColor);
         r(38, 22 + hy, 1, 1, "#f8efd9");
         r(42, 25 + hy, 2, 2, skin);
         r(37, 29 + hy, 3, 1, "#a86e68");
       } else {
         r(25, 22 + hy, 4, 4, ink);
         r(36, 22 + hy, 4, 4, ink);
-        r(26, 23 + hy, 2, 2, "#7893a0");
-        r(37, 23 + hy, 2, 2, "#7893a0");
+        r(26, 23 + hy, 2, 2, cosmetics.eyeColor);
+        r(37, 23 + hy, 2, 2, cosmetics.eyeColor);
         r(26, 22 + hy, 1, 1, "#fff5df");
         r(37, 22 + hy, 1, 1, "#fff5df");
         r(31, 27 + hy, 2, 1, skinDark);
@@ -522,7 +589,9 @@ export function drawMercenary(
       wy = frame % 2 ? 1 : 0;
     ctx.save();
     ctx.translate(0, wy);
-    if (key.includes("bow")) {
+    if (cosmetics.weaponStyle !== 0) {
+      drawWeaponVariant(ctx, key, cosmetics.weaponStyle);
+    } else if (key.includes("bow")) {
       p(
         [
           [50, 26],
@@ -710,13 +779,7 @@ export function drawMercenary(
 }
 const cache = new Map<string, string>();
 export function portrait(m: Mercenary) {
-  const key = JSON.stringify([
-    m.appearance,
-    m.gender,
-    m.race,
-    m.classId,
-    m.equipment,
-  ]);
+  const key = appearanceSignature(m);
   if (cache.has(key)) return cache.get(key)!;
   const c = document.createElement("canvas");
   c.width = 64;
