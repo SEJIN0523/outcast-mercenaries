@@ -2,11 +2,13 @@ import { newGuild, recruit, toggleParty, candidatesFor } from "../domain/guild";
 import {
   applyReward,
   startBattle,
-  tickBattle,
-  focusAttack,
+  advanceBattle,
+  changeTactic,
+  requestEscape,
 } from "../domain/battle";
 import { decodeSave, readSave, writeSave } from "../persistence/save";
-import type { Battle, Guild } from "../domain/types";
+import type { Guild } from "../domain/types";
+import type { CombatBattle as Battle, TacticId } from "../domain/combat/types";
 export interface Snapshot {
   guild: Guild;
   battle: Battle | null;
@@ -88,7 +90,9 @@ function resolveBattle(battle: Battle) {
     notice:
       battle.status === "victory"
         ? "의뢰 완료! 120골드와 출전자 경험치 55를 획득했습니다."
-        : "파티가 철수했습니다. 편성을 보강해 다시 도전해 보세요.",
+        : battle.status === "escaped"
+          ? "도주했습니다. 보상 없이 본부로 복귀할 수 있습니다."
+          : "파티가 철수했습니다. 편성을 보강해 다시 도전해 보세요.",
   });
   scheduleSave();
 }
@@ -146,16 +150,24 @@ export const store = {
       emit({
         battle: startBattle(state.guild),
         paused: false,
-        notice: "고블린 토벌 시작. 집중 공격으로 동료를 지휘하세요.",
+        notice: "자율전투 시작. 단장은 전술과 도주를 지휘합니다.",
       });
     }),
   tick: () => {
     if (state.battle?.status === "active" && !state.paused && !document.hidden)
-      resolveBattle(tickBattle(state.battle));
+      resolveBattle(advanceBattle(state.battle, 0.05 * state.battle.speed));
   },
-  focus: () => {
-    if (state.battle?.status === "active" && !state.paused)
-      resolveBattle(focusAttack(state.battle));
+  tactic: (tactic: TacticId) => {
+    if (state.battle) emit({ battle: changeTactic(state.battle, tactic) });
+  },
+  escape: () => {
+    if (state.battle) emit({ battle: requestEscape(state.battle) });
+  },
+  speed: () => {
+    if (state.battle?.status === "active")
+      emit({
+        battle: { ...state.battle, speed: state.battle.speed === 1 ? 2 : 1 },
+      });
   },
   togglePause: () => {
     if (state.battle?.status === "active") emit({ paused: !state.paused });

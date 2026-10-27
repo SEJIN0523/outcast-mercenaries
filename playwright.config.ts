@@ -5,6 +5,7 @@ const base = resolvePagesBase(
   process.env.PAGES_BASE_PATH,
 );
 export default defineConfig({
+  timeout: 60000,
   testDir: "./e2e",
   fullyParallel: false,
   use: {

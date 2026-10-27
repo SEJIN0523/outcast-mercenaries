@@ -1778,3 +1778,212 @@ progress::-moz-progress-bar {
     height: 54px;
   }
 }
+/* Real-time tactical battle: full field, compact summaries, no individual controls. */
+.realtime-screen .rt-enemies,
+.realtime-screen .rt-allies {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  background: #1b2d20;
+  border-bottom: 1px solid #3c5134;
+}
+.rt-side-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: #9ca97f;
+  margin-bottom: 5px;
+}
+.rt-side-label > span:last-child {
+  letter-spacing: 0;
+}
+.rt-enemy-health {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+}
+.rt-ally-health {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+}
+.rt-health {
+  background: #263620;
+  padding: 5px;
+  border: 1px solid #475a35;
+  border-radius: 4px;
+}
+.rt-health > span {
+  font-size: 9px;
+  display: block;
+  color: #d2dcba;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.rt-health > b {
+  font-family: Georgia, serif;
+  font-size: 12px;
+  display: block;
+  font-weight: normal;
+  color: #c4d4a6;
+  margin: 3px 0 4px;
+}
+.rt-health > b > small {
+  font-family: sans-serif;
+  font-size: 8px;
+  color: #8d9f75;
+}
+.rt-health progress {
+  width: 100%;
+  height: 3px;
+}
+.rt-health.enemy {
+  background: #342e21;
+  border-color: #5e5439;
+}
+.rt-health.enemy > span {
+  color: #d5bea0;
+}
+.rt-health.enemy progress::-webkit-progress-value {
+  background: #c48e6b;
+}
+.rt-health.enemy progress::-moz-progress-bar {
+  background: #c48e6b;
+}
+.realtime-screen .rt-field {
+  min-height: 100px;
+}
+.tactical-console {
+  padding: 10px 12px calc(10px + 0px);
+  flex-shrink: 0;
+  background: #1b2b1d;
+  border-top: 1px solid #4c5b38;
+}
+.tactic-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #9cab84;
+  margin-bottom: 8px;
+}
+.tactic-info b {
+  font-weight: 500;
+  color: #d9c895;
+}
+.tactic-info > span:last-child {
+  font-size: 8px;
+  color: #8aa06f;
+}
+.tactic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.tactic-grid button {
+  padding: 7px 2px;
+  min-height: 44px;
+  font-size: 11px;
+  background: #273d27;
+  border-color: #4d6540;
+}
+.tactic-grid button[aria-pressed="true"] {
+  border-color: #c6ae73;
+  background: #635d35;
+  color: #f4e0a6;
+  box-shadow: inset 0 0 0 1px #c6ae7333;
+}
+.tactic-description {
+  font-size: 9px;
+  color: #91a37c;
+  line-height: 1.6;
+  margin: 8px 0;
+  min-height: 15px;
+}
+.battle-utility {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.escape-button {
+  font-size: 12px;
+  color: #e2b799;
+  background: #4c3427;
+  border-color: #886447;
+}
+.speed-button {
+  font-size: 16px;
+  color: #d2d8b5;
+}
+.speed-button > span {
+  font-size: 9px;
+  margin-left: 6px;
+  color: #9caf85;
+}
+.realtime-screen .battle-result h2 {
+  font-size: 20px;
+}
+.realtime-screen .battle-result p {
+  font-size: 10px;
+}
+@media (max-height: 740px) {
+  .realtime-screen .battle-header {
+    padding: 7px 11px;
+  }
+  .realtime-screen .battle-meta {
+    height: 30px;
+  }
+  .realtime-screen .rt-enemies,
+  .realtime-screen .rt-allies {
+    padding: 5px 10px;
+  }
+  .rt-side-label {
+    margin-bottom: 4px;
+  }
+  .rt-health {
+    padding: 4px;
+  }
+  .tactical-console {
+    padding: 8px 10px;
+  }
+  .tactic-info {
+    margin-bottom: 6px;
+  }
+  .tactic-grid {
+    gap: 5px;
+  }
+  .tactic-description {
+    margin: 6px 0;
+    font-size: 8px;
+  }
+  .realtime-screen .rt-field {
+    min-height: 95px;
+  }
+}
+@media (max-height: 650px) {
+  .realtime-screen .rt-side-label {
+    display: none;
+  }
+  .realtime-screen .rt-health > b {
+    margin: 2px 0 3px;
+  }
+  .realtime-screen .battle-event {
+    min-height: 22px;
+    padding: 5px 10px;
+    font-size: 8px;
+  }
+  .realtime-screen .tactic-description {
+    font-size: 8px;
+    line-height: 1.4;
+  }
+  .realtime-screen .battle-header small {
+    font-size: 8px;
+  }
+}
+@media (max-height: 650px) {
+  .realtime-screen .tactic-description {
+    display: none;
+  }
+  .realtime-screen .rt-field {
+    min-height: 80px;
+  }
+}

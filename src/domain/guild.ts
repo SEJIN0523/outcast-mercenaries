@@ -39,9 +39,25 @@ export function newGuild(): Guild {
   return {
     name: "새벽의 여명",
     gold: 240,
-    roster: [hero, ria],
+    roster: [
+      hero,
+      ria,
+      ...(
+        [
+          ["kael", "카엘", "warrior", "sword"],
+          ["mira", "미라", "priest", "staff"],
+          ["noel", "노엘", "mage", "staff"],
+        ] as const
+      ).map(([id, name, classId, weapon]) => ({
+        ...createMercenary(`starter-${id}`),
+        id,
+        name,
+        classId,
+        equipment: { weapon, armor: "cloth" },
+      })),
+    ],
     candidates: candidatesFor(0),
-    party: ["hero", "ria"],
+    party: ["kael", "ria", "mira", "noel"],
     recruitBatch: 0,
     victories: 0,
   };
@@ -63,12 +79,18 @@ export function recruit(guild: Guild, id: string): Guild {
 export function toggleParty(guild: Guild, id: string): Guild {
   if (!guild.roster.some((m) => m.id === id))
     throw Error("소속 용병만 편성할 수 있습니다.");
-  if (guild.party.includes(id)) {
-    if (guild.party.length === 1)
-      throw Error("파티에는 최소 1명이 필요합니다.");
-    return { ...guild, party: guild.party.filter((x) => x !== id) };
+  if (guild.roster.find((m) => m.id === id)?.story === "hero")
+    throw Error("단장은 전장에 나가지 않고 전술을 지휘합니다.");
+  const party = combatParty(guild).map((m) => m.id);
+  if (party.includes(id)) {
+    if (party.length === 1) throw Error("파티에는 최소 1명이 필요합니다.");
+    return { ...guild, party: party.filter((x) => x !== id) };
   }
-  if (guild.party.length >= 4)
-    throw Error("파티는 최대 4명까지 편성할 수 있습니다.");
-  return { ...guild, party: [...guild.party, id] };
+  if (party.length >= 4) throw Error("파티는 최대 4명까지 편성할 수 있습니다.");
+  return { ...guild, party: [...party, id] };
+}
+export function combatParty(guild: Guild) {
+  return guild.party
+    .map((id) => guild.roster.find((m) => m.id === id))
+    .filter((m): m is Guild["roster"][number] => !!m && m.story !== "hero");
 }

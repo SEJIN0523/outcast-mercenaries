@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { store } from "../state/store";
+import { combatParty } from "../domain/guild";
 import { random } from "../domain/random";
 import { drawMercenary } from "./sprite";
 
@@ -280,7 +281,7 @@ export class GuildScene extends Phaser.Scene {
       guild.party,
       guild.roster.map((m) => [m.id, m.level]),
       battle?.tick,
-      battle?.cooldown,
+      battle?.elapsed,
       battle?.status,
     ]);
     if (key === this.lastKey) return;
@@ -291,11 +292,11 @@ export class GuildScene extends Phaser.Scene {
     this.actors!.removeAll(true);
     const party = battle
       ? battle.units.filter((u) => u.side === "party")
-      : guild.party.map((id) => ({
-          id,
+      : combatParty(guild).map((mercenary) => ({
+          id: mercenary.id,
           hp: 1,
           maxHp: 1,
-          mercenary: guild.roster.find((m) => m.id === id)!,
+          mercenary,
         }));
     party.forEach((unit, i) => {
       const m = unit.mercenary!;

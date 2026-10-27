@@ -48,7 +48,7 @@ export function App() {
   } = useRegisterSW();
   useEffect(() => {
     void store.init();
-    const timer = setInterval(store.tick, 700);
+    const timer = setInterval(store.tick, 50);
     const listen = (e: Event) => {
       e.preventDefault();
       setInstall(e as InstallEvent);
@@ -339,7 +339,9 @@ function CharacterDetails({
         </div>
         <div>
           <span className="class-label" style={{ color: c.color }}>
-            {c.name} · Lv.{m.level}
+            {m.story === "hero"
+              ? "용병단장 · 비전투"
+              : `${c.name} · Lv.${m.level}`}
           </span>
           <h3>
             {m.name} <small>{m.gender === "female" ? "♀" : "♂"}</small>
@@ -347,13 +349,19 @@ function CharacterDetails({
           <p>
             {RACES[m.race]} ·{" "}
             {m.story === "hero"
-              ? "이세계의 낙오자"
+              ? "후방에서 전술을 지휘합니다"
               : m.story === "ria"
                 ? "숲의 길잡이"
                 : c.role}
           </p>
           <span className="roster-tag enlisted">
-            {owned ? (inParty ? "출전 파티" : "소속 용병") : "모집 지원자"}
+            {m.story === "hero"
+              ? "전술 지휘관"
+              : owned
+                ? inParty
+                  ? "출전 파티"
+                  : "소속 용병"
+                : "모집 지원자"}
           </span>
         </div>
       </div>
@@ -439,16 +447,19 @@ function CharacterDetails({
       <button
         className={`${owned ? "secondary" : "primary"} full-width detail-action`}
         disabled={
+          m.story === "hero" ||
           disabled ||
           (!owned && store.getSnapshot().guild.gold < recruitCost(m))
         }
         onClick={() => (owned ? store.toggleParty(m.id) : store.recruit(m.id))}
       >
-        {owned
-          ? inParty
-            ? "파티에서 제외"
-            : "출전 파티에 편성"
-          : `동료로 모집 · ${recruitCost(m)} G`}
+        {m.story === "hero"
+          ? "단장은 직접 전투하지 않습니다"
+          : owned
+            ? inParty
+              ? "파티에서 제외"
+              : "출전 파티에 편성"
+            : `동료로 모집 · ${recruitCost(m)} G`}
       </button>
     </div>
   );

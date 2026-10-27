@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { createMercenary, gainXp, recruitCost, statsOf } from "./characters";
-import { newGuild, recruit, toggleParty, candidatesFor } from "./guild";
-import { applyReward, focusAttack, startBattle, tickBattle } from "./battle";
+import { newGuild, recruit, toggleParty, candidatesFor } from "./legacy/guild";
+import {
+  applyReward,
+  focusAttack,
+  startBattle,
+  tickBattle,
+} from "./legacy/battle";
 import { CLASSES } from "../data/catalog";
 describe("용병 생성과 성장", () => {
   it("같은 시드는 외형과 전체 인물을 재현한다", () => {

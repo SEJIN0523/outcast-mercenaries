@@ -1,5 +1,6 @@
 import { CLASSES, RACES } from "../data/catalog";
 import { recruitCost } from "../domain/characters";
+import { combatParty } from "../domain/guild";
 import type { Guild } from "../domain/types";
 import { store } from "../state/store";
 import { Avatar, Icon, Stars } from "./components";
@@ -40,7 +41,7 @@ export function HomeScreen({
         <div>
           <span>출전 파티</span>
           <b>
-            {guild.party.length}
+            {combatParty(guild).length}
             <small> / 4</small>
           </b>
         </div>
@@ -184,13 +185,13 @@ export function PartyScreen({
   inspect,
   navigate,
 }: Props & { navigate: (screen: Screen) => void }) {
-  const party = guild.party.map((id) => guild.roster.find((m) => m.id === id)!);
+  const party = combatParty(guild);
   return (
     <section className="screen party-screen" aria-label="편성 화면">
       <div className="screen-heading">
         <span className="eyebrow">YOUR COMPANIONS</span>
         <h1>
-          출전 파티 <small>{guild.party.length} / 4</small>
+          출전 파티 <small>{combatParty(guild).length} / 4</small>
         </h1>
         <p>동료를 선택해 함께할 파티를 준비하세요.</p>
       </div>
@@ -223,31 +224,33 @@ export function PartyScreen({
         <span>최소 1명 · 최대 4명</span>
       </div>
       <div className="party-roster">
-        {guild.roster.map((m) => (
-          <article className="party-row" key={m.id}>
-            <button
-              onClick={() => inspect(m.id)}
-              className="party-person"
-              aria-label={`${m.name} 상세 정보`}
-            >
-              <Avatar m={m} />
-              <span>
-                <b>{m.name}</b>
-                <small>
-                  {CLASSES[m.classId].name} · Lv.{m.level}
-                </small>
-              </span>
-            </button>
-            <button
-              className={`party-toggle ${guild.party.includes(m.id) ? "enlisted" : ""}`}
-              disabled={disabled}
-              onClick={() => store.toggleParty(m.id)}
-              aria-label={`${m.name} ${guild.party.includes(m.id) ? "편성 해제" : "편성"}`}
-            >
-              {guild.party.includes(m.id) ? "✓ 편성 중" : "＋ 편성"}
-            </button>
-          </article>
-        ))}
+        {guild.roster
+          .filter((m) => m.story !== "hero")
+          .map((m) => (
+            <article className="party-row" key={m.id}>
+              <button
+                onClick={() => inspect(m.id)}
+                className="party-person"
+                aria-label={`${m.name} 상세 정보`}
+              >
+                <Avatar m={m} />
+                <span>
+                  <b>{m.name}</b>
+                  <small>
+                    {CLASSES[m.classId].name} · Lv.{m.level}
+                  </small>
+                </span>
+              </button>
+              <button
+                className={`party-toggle ${guild.party.includes(m.id) ? "enlisted" : ""}`}
+                disabled={disabled}
+                onClick={() => store.toggleParty(m.id)}
+                aria-label={`${m.name} ${guild.party.includes(m.id) ? "편성 해제" : "편성"}`}
+              >
+                {guild.party.includes(m.id) ? "✓ 편성 중" : "＋ 편성"}
+              </button>
+            </article>
+          ))}
       </div>
       <button
         className="primary full-width"
@@ -284,7 +287,7 @@ export function QuestsScreen({
         <div className="quest-body">
           <div className="quest-tags">
             <span>F 등급</span>
-            <span>토벌 · 웨이브 1</span>
+            <span>고블린 5마리 · 웨이브 1</span>
           </div>
           <h2>숲의 불청객</h2>
           <p>
@@ -304,19 +307,19 @@ export function QuestsScreen({
           </div>
           <div className="quest-preparation">
             <span>
-              현재 파티 <b>{guild.party.length} / 4명</b>
+              현재 파티 <b>{combatParty(guild).length} / 4명</b>
             </span>
             <small>권장 Lv.1 · 2인 이상</small>
           </div>
           <p className="hint">
-            전투는 자동 진행됩니다. 집중 공격으로 지휘하세요.
+            이동·공격·스킬은 자동입니다. 단장은 전술만 지휘합니다.
             <br />
             패배해도 골드 손실이나 영구 사망은 없습니다.
           </p>
           <button
             className="primary full-width"
             onClick={onStart}
-            disabled={disabled || guild.party.length === 0}
+            disabled={disabled || combatParty(guild).length === 0}
           >
             출전하기 →
           </button>

@@ -154,6 +154,7 @@ export const EQUIPMENT: Record<
     bonus: { defense: 1 },
   },
 };
+/** Preserved sequential-combat data. Production AI uses AUTO_SKILLS in combat.ts. */
 export const SKILLS = {
   focus: {
     name: "집중 공격",

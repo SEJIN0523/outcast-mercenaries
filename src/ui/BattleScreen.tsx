@@ -1,46 +1,52 @@
-import type { Battle, Unit } from "../domain/types";
+import type { CombatBattle, CombatUnit } from "../domain/combat/types";
+import { TACTICS } from "../data/combat";
+import type { TacticId } from "../domain/combat/types";
 import { store } from "../state/store";
-import { Avatar, Icon } from "./components";
+import { Icon } from "./components";
 import { GameCanvas } from "./GameCanvas";
-
-function HealthCard({ unit }: { unit: Unit }) {
+function Health({ unit }: { unit: CombatUnit }) {
   return (
     <article
-      className={`unit-card ${unit.side} ${unit.hp === 0 ? "fallen" : ""}`}
+      className={`rt-health ${unit.side} ${unit.hp === 0 || unit.escaped ? "fallen" : ""}`}
       data-testid={`unit-${unit.id}`}
     >
-      {unit.mercenary && <Avatar m={unit.mercenary} />}
-      <div>
-        <span>
-          {unit.name}
-          {unit.hp === 0 && <small> · 전투 불능</small>}
-        </span>
-        <b>
-          {unit.hp}
-          <small> / {unit.maxHp}</small>
-        </b>
-        <progress
-          aria-label={`${unit.name} HP`}
-          max={unit.maxHp}
-          value={unit.hp}
-        />
-      </div>
+      <span>
+        {unit.side === "enemy"
+          ? unit.boss
+            ? "대장"
+            : unit.role === "ranged"
+              ? "궁수"
+              : unit.name.replace("고블린 ", "")
+          : unit.name}
+      </span>
+      <b>
+        {unit.hp}
+        <small>/{unit.maxHp}</small>
+      </b>
+      <progress
+        aria-label={`${unit.name} HP`}
+        value={unit.hp}
+        max={unit.maxHp}
+      />
     </article>
   );
 }
+const ids = Object.keys(TACTICS) as TacticId[];
 export function BattleScreen({
   battle,
   paused,
   onReturn,
 }: {
-  battle: Battle;
+  battle: CombatBattle;
   paused: boolean;
   onReturn: () => void;
 }) {
   const active = battle.status === "active";
+  const minute = Math.floor(battle.elapsed / 60),
+    second = Math.floor(battle.elapsed % 60);
   return (
     <main
-      className="battle-screen"
+      className="battle-screen realtime-screen"
       aria-label="전투 화면"
       data-testid="battle-screen"
     >
@@ -49,7 +55,7 @@ export function BattleScreen({
           <Icon name="sword" />
         </span>
         <div>
-          <small>속삭임의 숲 · F 등급</small>
+          <small>속삭임의 숲 · 단장은 후방 지휘 중</small>
           <h1>고블린 토벌</h1>
         </div>
         <button
@@ -65,41 +71,61 @@ export function BattleScreen({
         <span>
           WAVE <b>1 / 1</b>
         </span>
-        <span data-testid="battle-turn">
-          TURN {String(battle.tick).padStart(2, "0")}
+        <span data-testid="battle-time">
+          {String(minute).padStart(2, "0")}:{String(second).padStart(2, "0")}
         </span>
         <span className={paused ? "paused-state" : "auto-state"}>
-          {!active ? "전투 종료" : paused ? "일시정지 중" : "● 자동전투"}
+          {!active
+            ? "전투 종료"
+            : battle.escaping
+              ? "도주 진행 중"
+              : paused
+                ? "일시정지 중"
+                : "● 실시간 자율전투"}
         </span>
       </div>
-      <section className="enemy-panel" aria-label="적군 체력">
-        <div className="battle-section-label">
+      <section className="rt-enemies" aria-label="적군 체력">
+        <div className="rt-side-label">
           <span>ENEMY</span>
-          <small>고블린 무리</small>
+          <span>
+            {battle.units.filter((u) => u.side === "enemy" && u.hp > 0).length}{" "}
+            / 5
+          </span>
         </div>
-        <div className="enemy-health">
+        <div className="rt-enemy-health">
           {battle.units
             .filter((u) => u.side === "enemy")
             .map((u) => (
-              <HealthCard key={u.id} unit={u} />
+              <Health key={u.id} unit={u} />
             ))}
         </div>
       </section>
-      <div className="battlefield">
+      <div
+        className="battlefield rt-field"
+        data-testid="battlefield"
+        data-positions={battle.units
+          .filter((u) => u.side === "party")
+          .map((u) => `${Math.round(u.x)},${Math.round(u.y)}`)
+          .join(";")}
+      >
         <GameCanvas battle />
-        <span className="field-location">WHISPERING WOODS</span>
-        {paused && <span className="pause-label">PAUSED · 지휘 대기 중</span>}
+        <span className="field-location">
+          AUTONOMOUS BATTLE · 이동과 스킬 자동
+        </span>
+        {paused && (
+          <span className="pause-label">PAUSED · 전술을 선택하세요</span>
+        )}
       </div>
-      <section className="ally-panel" aria-label="아군 체력">
-        <div className="battle-section-label">
-          <span>YOUR PARTY</span>
-          <small>{battle.participants.length}명의 동료</small>
+      <section className="rt-allies" aria-label="아군 체력">
+        <div className="rt-side-label">
+          <span>YOUR MERCENARIES</span>
+          <span>{battle.participants.length}명 · 단장 비전투</span>
         </div>
-        <div className="ally-health">
+        <div className="rt-ally-health">
           {battle.units
             .filter((u) => u.side === "party")
             .map((u) => (
-              <HealthCard key={u.id} unit={u} />
+              <Health key={u.id} unit={u} />
             ))}
         </div>
       </section>
@@ -107,29 +133,47 @@ export function BattleScreen({
         {battle.logs.at(-1)}
       </div>
       {active ? (
-        <section className="skill-panel" aria-label="전투 스킬">
-          <div className="skill-description">
-            <span>COMMAND SKILL</span>
-            <b>집중 공격</b>
-            <small>공격력 180% · 재사용 5턴</small>
+        <section className="tactical-console" aria-label="전술 지휘">
+          <div className="tactic-info">
+            <span>
+              현재 전술 · <b>{TACTICS[battle.tactic].name}</b>
+            </span>
+            <span>스킬 자동</span>
           </div>
-          <button
-            className="primary skill-button"
-            onClick={store.focus}
-            disabled={paused || battle.cooldown > 0}
-            aria-label={
-              battle.cooldown > 0
-                ? `집중 공격 ${battle.cooldown}턴 대기`
-                : "집중 공격 발동"
-            }
-          >
-            <span>✦</span>
-            {paused
-              ? "일시정지 중"
-              : battle.cooldown > 0
-                ? `${battle.cooldown}턴 대기`
-                : "스킬 발동"}
-          </button>
+          <div className="tactic-grid" role="group" aria-label="전술 명령">
+            {ids.map((id) => (
+              <button
+                key={id}
+                aria-pressed={battle.tactic === id}
+                disabled={battle.escaping}
+                title={TACTICS[id].description}
+                onClick={() => store.tactic(id)}
+              >
+                {TACTICS[id].name}
+              </button>
+            ))}
+          </div>
+          <p className="tactic-description">
+            {battle.escaping
+              ? "모든 생존 용병이 하단 탈출 지점으로 이동합니다."
+              : TACTICS[battle.tactic].description}
+          </p>
+          <div className="battle-utility">
+            <button
+              className="escape-button"
+              onClick={store.escape}
+              disabled={battle.escaping}
+            >
+              {battle.escaping ? "도주 중…" : "도주"}
+            </button>
+            <button
+              className="speed-button"
+              aria-label={`전투 속도 ${battle.speed}배속`}
+              onClick={store.speed}
+            >
+              {battle.speed}× <span>전투 속도</span>
+            </button>
+          </div>
         </section>
       ) : (
         <section className="battle-result" aria-label="전투 결과">
@@ -137,12 +181,16 @@ export function BattleScreen({
             <h2>
               {battle.status === "victory"
                 ? "의뢰를 완수했습니다!"
-                : "안전하게 철수했습니다"}
+                : battle.status === "escaped"
+                  ? "전장에서 도주했습니다"
+                  : "안전하게 철수했습니다"}
             </h2>
             <p>
               {battle.status === "victory"
-                ? "◈ 120 G · 출전자 경험치 +55"
-                : "획득 보상 없음 · 파티를 보강해 보세요"}
+                ? "◈ 120 G · 전투원 경험치 +55"
+                : battle.status === "escaped"
+                  ? "획득 보상 없음 · 생존 동료와 복귀합니다"
+                  : "획득 보상 없음 · 파티를 보강해 보세요"}
             </p>
           </div>
           <button className="primary" onClick={onReturn}>
@@ -150,11 +198,6 @@ export function BattleScreen({
           </button>
         </section>
       )}
-      <div className="battle-bottom-note">
-        {active
-          ? "화면을 벗어나면 자동전투가 잠시 멈춥니다."
-          : "다음 출전 시 모든 동료의 체력이 회복됩니다."}
-      </div>
     </main>
   );
 }
