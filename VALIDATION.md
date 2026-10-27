@@ -55,4 +55,13 @@ npm run test:e2e
 
 ## GitHub Pages 준비 검증
 
-실제 저장소 배포는 아직 생성 승인 대기 중이다. 로컬 프로덕션 서버에서 /outcast-mercenaries/ 하위 경로로 위 5개 브라우저 테스트를 통과했다. base 경로 자동 계산, 사용자 사이트 루트, configure-pages 우선 경로, 잘못된 경로 거부를 단위 테스트 4개로 검증했다. Pages 워크플로 YAML의 원격 실행과 실제 공개 HTTPS 접속은 저장소 생성·Pages 활성화 후 확인한다. 따라서 현재 공개 게임 URL은 없다.
+공개 저장소 https://github.com/SEJIN0523/outcast-mercenaries 를 사용자 승인 후 생성했다. 로컬 프로덕션 서버에서 /outcast-mercenaries/ 하위 경로로 위 5개 브라우저 테스트를 통과했다. base 경로 자동 계산, 사용자 사이트 루트, configure-pages 우선 경로, 잘못된 경로 거부를 단위 테스트 4개로 검증했다.
+
+## 실제 공개 배포 검증
+
+- GitHub Actions [첫 배포 실행 40450202996](https://github.com/SEJIN0523/outcast-mercenaries/actions/runs/40450202996): build 및 deploy 성공.
+- 실제 게임 URL: https://sejin0523.github.io/outcast-mercenaries/
+- `verify-pages.mjs`: 공개 HTTPS 앱 HTML, JS, manifest, PNG 아이콘, Service Worker 확인 성공.
+- `GAME_URL`을 실제 게임 URL로 설정한 `npm run test:live`: **5 / 5 통과**, 13.9초.
+- 공개 사이트에서도 PC 모집·3인 파티·집중 공격·자동전투·보상·새로고침 복원, 모바일 모집/편성, PWA 캐시 후 오프라인 재접속, 여러 화면 크기, 가로 터치 및 세로 전환을 확인했다.
+- 실제 Android 기기의 설치 프롬프트/홈 화면 실행은 아직 사용자 기기에서 확인하지 않았다. 위 결과는 Chromium 자동 테스트이며 실기기 검증으로 간주하지 않는다.

@@ -2,6 +2,10 @@
 
 추방된 소환자가 숨겨진 재능을 모으는 2D 픽셀아트 용병단 운영 RPG. 서버 없이 브라우저에서 플레이하는 첫 MVP입니다.
 
+**게임 실행: https://sejin0523.github.io/outcast-mercenaries/**
+
+Android Chrome에서 위 주소를 열고 가로로 돌려 플레이하세요. 오프라인 준비 완료 후 Chrome 메뉴의 앱 설치 / 홈 화면에 추가로 설치할 수 있습니다.
+
 ## 실행
 
 Node.js 22.12 이상과 npm이 필요합니다. 개발 시에만 npm 패키지를 내려받습니다. 실행에는 외부 서비스 계정이나 API 키가 필요하지 않습니다.
@@ -97,11 +101,19 @@ git remote add origin https://github.com/YOUR_NAME/YOUR_REPOSITORY.git
 git push -u origin main
 ```
 
-정적 배포 대상은 `dist/`입니다. `.github/workflows/pages.yml`이 main 푸시 시 테스트·빌드·브라우저 검증 후 GitHub Pages에 배포하고 실제 HTTPS 응답까지 확인합니다. 새 저장소는 사용자 승인 후 생성하며, Pages의 배포 Source를 **GitHub Actions**로 설정해야 합니다. 이 작업은 해당 게임 저장소에만 적용합니다. 연결된 GitHub 도구에는 저장소 생성/Pages 설정 기능이 없으며, 이 PC에는 gh CLI가 없습니다. 필요하면 로그인된 브라우저에서 설정합니다.
+정적 배포 대상은 `dist/`입니다. `.github/workflows/pages.yml`이 main 푸시 시 테스트·빌드·브라우저 검증 후 GitHub Pages에 배포하고 실제 HTTPS 응답까지 확인합니다. 이 게임 저장소의 Pages Source는 **GitHub Actions**로 활성화했습니다. 저장소 생성과 설정은 사용자 승인 후 기존 Git 인증으로 수행했으며, 다른 저장소는 변경하지 않았습니다.
 
 `vite.config.ts`는 configure-pages의 `PAGES_BASE_PATH`를 우선 사용하며, 없으면 `GITHUB_REPOSITORY=소유자/저장소`에서 `/저장소/`를 계산합니다. 사용자 사이트(`소유자.github.io`)와 커스텀 도메인은 `/`를 지원합니다. 로컬 기본값은 `/`입니다. manifest의 id/start_url/scope와 Service Worker fallback에도 같은 경로를 사용합니다. `node_modules/`, `dist/`, 테스트 출력은 Git에서 제외합니다.
 
-배포 절차·검증과 Android 설치는 [DEPLOYMENT.md](DEPLOYMENT.md)를 참고하세요. **아직 GitHub 원격 배포 성공을 확인한 상태가 아닙니다.**
+배포 절차·검증과 Android 설치는 [DEPLOYMENT.md](DEPLOYMENT.md)를 참고하세요. 2026-10-27 GitHub Actions 배포 성공과 실제 공개 HTTPS 게임 실행을 확인했습니다. 실제 Android 기기의 설치 확인은 별도입니다.
+
+공개 게임의 같은 브라우저 테스트를 다시 실행하려면 PowerShell에서 다음을 사용합니다. 테스트 데이터는 테스트용 브라우저의 로컬 저장에만 기록됩니다.
+
+```powershell
+$env:GAME_URL='https://sejin0523.github.io/outcast-mercenaries/'
+npm run test:live
+Remove-Item Env:GAME_URL
+```
 
 ## 모바일 가로 화면
 

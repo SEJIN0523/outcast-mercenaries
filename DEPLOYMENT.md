@@ -4,7 +4,9 @@
 
 2026-10-27 확인: 로컬 작업 폴더는 `2d-rpg-1-typescript-phaser-3`, 기존 TypeScript/Phaser 3/React/Vite MVP를 유지했다. 사용자 승인을 받아 공개 저장소 https://github.com/SEJIN0523/outcast-mercenaries 를 생성하고 origin으로 연결했다. 다른 저장소/운영 사이트는 변경하지 않는다.
 
-**공개 게임 URL은 원격 배포 성공과 실제 접속을 확인한 후 기록한다.** Git Credential Manager의 기존 인증을 비대화형으로 사용하여 GitHub REST API와 Git으로 생성/푸시/Pages 설정을 수행한다. 인증값은 소스·로그·파일에 기록하지 않으며, 공개 커밋 작성자는 GitHub noreply 주소를 사용한다. 휴대폰 사용자에게 데스크톱 로그인을 요구하지 않는다.
+**공개 게임: https://sejin0523.github.io/outcast-mercenaries/**
+
+2026-10-27 [첫 배포 실행](https://github.com/SEJIN0523/outcast-mercenaries/actions/runs/40450202996)이 성공했다. 실제 HTTPS 주소에서 JS/manifest/PNG 아이콘/Service Worker 응답과 브라우저 플레이를 확인했다. Git Credential Manager의 기존 인증을 비대화형으로 사용하여 GitHub REST API와 Git으로 생성/푸시/Pages 설정을 수행했다. 인증값은 소스·로그·파일에 기록하지 않으며, 공개 커밋 작성자는 GitHub noreply 주소를 사용한다. 휴대폰 사용자에게 데스크톱 로그인을 요구하지 않는다.
 
 ## 자동 배포 구성
 
