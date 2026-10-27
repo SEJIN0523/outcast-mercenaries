@@ -1,3 +1,5 @@
+> v4: 현재 feature/game-renewal-v4는 별도 Sites 미리보기로 게시했다. 기존 main/Pages workflow와 Vite Pages base는 변경하지 않았다. 새 미리보기의 성공 URL·실제 전투 검증·제한은 RENEWAL_V4_REPORT.md를 따른다. 아래 Pages 운영 절차는 기존 배포를 유지하기 위한 문서다.
+
 # GitHub Pages 배포와 Android 설치
 
 ## 현재 연결 상태
