@@ -4,7 +4,7 @@
 
 - 개발 브랜치: `feature/game-renewal-v4`
 - 운영 게임(기존 버전): https://sejin0523.github.io/outcast-mercenaries/
-- 분리 미리보기: 배포 검증 결과와 URL은 RENEWAL_V4_REPORT.md 참조.
+- [분리 게임 미리보기](https://outcast-quarter-battle-preview-k27.nice-rook-0449.chatgpt.site) · [에셋 갤러리](https://outcast-quarter-battle-preview-k27.nice-rook-0449.chatgpt.site/?gallery=1) (같은 ChatGPT 계정 로그인 필요 가능). 실제 HTTPS 전투 실행 확인.
 
 현재 main과 기존 GitHub Pages를 자동으로 변경하지 않는다. `.github/workflows/ci.yml`은 기능 브랜치의 테스트/빌드만 하고, `pages.yml`은 기존 main 배포 설정을 유지한다.
 

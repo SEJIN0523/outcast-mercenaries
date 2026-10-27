@@ -1,6 +1,18 @@
 # 리뉴얼 v4 결과
 
-개발 브랜치: `feature/game-renewal-v4`. 운영 main 및 GitHub Pages는 변경하지 않는다. 원격 배포 검증은 진행 중이며 성공을 확인한 뒤 이 문서에 URL과 결과를 확정한다.
+개발 브랜치: [feature/game-renewal-v4](https://github.com/SEJIN0523/outcast-mercenaries/tree/feature/game-renewal-v4). 구현 커밋: d5b10e9c4f8c3150c14789bc03b2d8a6affe7b5a. 운영 main은 원격 조회에서도 4bc5a3e735265f0fb22efab222c2035fa009b914로 보존되었다. 기존 Pages workflow·Vite base 설정은 변경하지 않았다.
+
+## 실제 접속 주소
+
+- [플레이 가능한 미리보기](https://outcast-quarter-battle-preview-k27.nice-rook-0449.chatgpt.site)
+- [캐릭터·장비 갤러리](https://outcast-quarter-battle-preview-k27.nice-rook-0449.chatgpt.site/?gallery=1)
+- 기존 운영: https://sejin0523.github.io/outcast-mercenaries/ (기존 버전 유지)
+
+Sites 소유자 전용 미리보기이므로 같은 ChatGPT 계정의 로그인이 필요할 수 있다. 저장 데이터는 운영과 별도 출처에 저장된다.
+
+배포 상태 succeeded, deployment ID appgdep_6ae091723da88191adcc54a225d31f33. Site ID appgprj_6ae07b09526881919d6a0876a2081f7a. 게시 소스 커밋 a7fc6f10680fa6c995e6637d36bffa7ad1d7fc6f. 버전 appgprj_6ae07b09526881919d6a0876a2081f7a~appgver_bbefe16cf3f08191aaab42405e3f4958.
+
+실제 HTTPS 주소에 소유자 QA 권한으로 접속해 HTTP200,390×844,10슬롯,5대5 승리,보상 후 새로고침 유지,갤러리 PNG를 검증했다. 페이지 JavaScript 오류0. 인증 정보는 게임 소스나 로그에 저장하지 않았다.
 
 ## 구현
 
